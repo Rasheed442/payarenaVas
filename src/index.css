@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@font-face {
+  font-family: "WorkSans-Black";
+  src: url("assets/fonts/work-sans/WorkSans-Black.ttf") format("truetype");
+}
+@font-face {
+  font-family: "WorkSans-Bold";
+  src: url("assets/fonts/work-sans/WorkSans-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "WorkSans-SemiBold";
+  src: url("assets/fonts/work-sans/WorkSans-SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "WorkSans-ExtraBold";
+  src: url("assets/fonts/work-sans/WorkSans-ExtraBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "WorkSans-ExtraLight";
+  src: url("assets/fonts/work-sans/WorkSans-ExtraLight.ttf") format("truetype");
+}
+@font-face {
+  font-family: "WorkSans-Hairline";
+  src: url("assets/fonts/work-sans/WorkSans-Hairline.ttf") format("truetype");
+}
+@font-face {
+  font-family: "WorkSans-Light";
+  src: url("assets/fonts/work-sans/WorkSans-Light.ttf") format("truetype");
+}
+@font-face {
+  font-family: "WorkSans-Thin";
+  src: url("assets/fonts/work-sans/WorkSans-Thin.ttf") format("truetype");
+}
+@font-face {
+  font-family: "WorkSans-Medium";
+  src: url("assets/fonts/work-sans/WorkSans-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "WorkSans-Regular";
+  src: url("assets/fonts/work-sans/WorkSans-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Roboto-Black";
+  src: url("assets/fonts/roboto/Roboto-Black.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Roboto-Bold";
+  src: url("assets/fonts/roboto/Roboto-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Roboto-Light";
+  src: url("assets/fonts/roboto/Roboto-Light.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Roboto-Medium";
+  src: url("assets/fonts/roboto/Roboto-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Roboto-Regular";
+  src: url("assets/fonts/roboto/Roboto-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Roboto-Thin";
+  src: url("assets/fonts/roboto/Roboto-Thin.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Manrope-Bold";
+  src: url("assets/fonts/manrope/Manrope-Bold.otf") format("opentype");
+}
+@font-face {
+  font-family: "Manrope-ExtraBold";
+  src: url("assets/fonts/manrope/Manrope-ExtraBold.otf") format("opentype");
+}
+@font-face {
+  font-family: "Manrope-ExtraLight";
+  src: url("assets/fonts/manrope/Manrope-ExtraLight.otf") format("opentype");
+}
+@font-face {
+  font-family: "Manrope-Light";
+  src: url("assets/fonts/manrope/Manrope-Light.otf") format("opentype");
+}
+@font-face {
+  font-family: "Manrope-Medium";
+  src: url("assets/fonts/manrope/Manrope-Medium.otf") format("opentype");
+}
+@font-face {
+  font-family: "Manrope-Regular";
+  src: url("assets/fonts/manrope/Manrope-Regular.otf") format("opentype");
+}
+@font-face {
+  font-family: "Manrope-SemiBold";
+  src: url("assets/fonts/manrope/Manrope-SemiBold.otf") format("opentype");
+}
+@font-face {
+  font-family: "GeneralSans-SemiBold";
+  src: url("assets/fonts/general-sans/GeneralSans-Semibold.otf")
+    format("opentype");
+}
+@font-face {
+  font-family: "GeneralSans-Bold";
+  src: url("assets/fonts/general-sans/GeneralSans-Bold.otf") format("opentype");
+}
+@font-face {
+  font-family: "GeneralSans-ExtraLight";
+  src: url("assets/fonts/general-sans/GeneralSans-ExtraLight.otf")
+    format("opentype");
+}
+@font-face {
+  font-family: "GeneralSans-Light";
+  src: url("assets/fonts/general-sans/GeneralSans-Light.otf") format("opentype");
+}
+@font-face {
+  font-family: "GeneralSans-Medium";
+  src: url("assets/fonts/general-sans/GeneralSans-Medium.otf")
+    format("opentype");
+}
+@font-face {
+  font-family: "GeneralSans-Regular";
+  src: url("assets/fonts/general-sans/GeneralSans-Regular.otf")
+    format("opentype");
+}
+
+@font-face {
+  font-family: "Poppins-SemiBold";
+  src: url("assets/fonts/poppins/Poppins-SemiBold.ttf") format("opentype");
+}
+@font-face {
+  font-family: "Poppins-Bold";
+  src: url("assets/fonts/poppins/Poppins-Bold.ttf") format("opentype");
+}
+@font-face {
+  font-family: "Poppins-ExtraLight";
+  src: url("assets/fonts/poppins/Poppins-ExtraLight.ttf") format("opentype");
+}
+@font-face {
+  font-family: "Poppins-Light";
+  src: url("assets/fonts/poppins/Poppins-Light.ttf") format("opentype");
+}
+@font-face {
+  font-family: "Poppins-Medium";
+  src: url("assets/fonts/poppins/Poppins-Medium.ttf") format("opentype");
+}
+@font-face {
+  font-family: "Poppins-Regular";
+  src: url("assets/fonts/poppins/Poppins-Regular.ttf") format("opentype");
+}
+
+html {
+  scroll-behavior: smooth;
+}
+p,
+a {
+  font-family: "GeneralSans-Regular", sans-serif;
+}
+
+.footer-link {
+  @apply text-white font-light mb-7 font-generalsans-light text-[0.8rem];
+}
+
+.subscribe-bg {
+  background: linear-gradient(180deg, #0293f1 0%, #56bdff 100%);
+}
+/* Chrome, Safari, Edge, Opera */
+/* input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+} */
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ::-webkit-scrollbar {
+
+.swiper-wrapper {
+  transition-duration: 800ms !important;
+}
+.testClass {
+  width: 500px;
+  /* height: 900px; */
+
+/* 
+::-webkit-scrollbar {
+  width: 5px !important;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #edf2f7;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #009bff;
+  border-radius: 6px;
+} */

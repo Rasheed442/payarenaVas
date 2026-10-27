@@ -7,22 +7,22 @@ import { toast } from "sonner";
 export default function RegisterIdentity() {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const [idType, setIdType] = useState("NIN");
-  const [idNumber, setIdNumber] = useState("");
+  const [idType, setIdType] = useState(state?.identity?.type || "NIN");
+  const [idNumber, setIdNumber] = useState(state?.identity?.number || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [verifiedBiodata, setVerifiedBiodata] = useState(null);
+  const [verifiedBiodata, setVerifiedBiodata] = useState(state?.verifiedBiodata || null);
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const isValid = /^\d{11}$/.test(idNumber);
   const emailToken = state?.emailToken || state?.email_token;
 
   useEffect(() => {
-    if (!state?.email || !emailToken || !state?.details || !state?.address || !state?.password) {
+    if (!state?.email || !emailToken || !state?.details || !state?.address) {
       navigate("/register/start", { replace: true });
     }
-  }, [state?.email, emailToken, state?.details, state?.address, state?.password, navigate]);
+  }, [state?.email, emailToken, state?.details, state?.address, navigate]);
 
-  if (!state?.email || !emailToken || !state?.details || !state?.address || !state?.password) return null;
+  if (!state?.email || !emailToken || !state?.details || !state?.address) return null;
 
   const submitIdentity = async (event) => {
     event.preventDefault();
@@ -84,78 +84,29 @@ export default function RegisterIdentity() {
   const submitOtp = async (event) => {
     event.preventDefault();
     if (!/^\d{6}$/.test(otpCode) || !verifiedBiodata || isSubmitting) return;
-
-    setIsSubmitting(true);
-    try {
-      const authBaseUrl = import.meta.env.VITE_AUTH_BASE_URL?.trim();
-      if (!authBaseUrl) throw new Error("Registration is temporarily unavailable. Please try again shortly.");
-      const completeResponse = await fetch(
-        `${authBaseUrl.replace(/\/+$/, "")}/auth/register/complete`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify({
-            biodata_token: otpCode,
-            password: state.password,
-            confirm_password: state.confirmPassword,
-            channel: "mobile",
-          }),
-        },
-      );
-      const completion = await completeResponse.json().catch(() => ({}));
-      if (!completeResponse.ok) {
-        const policyErrors = completion.password_policy?.errors;
-        const fieldErrors = Object.values(completion)
-          .flatMap((value) => Array.isArray(value) ? value : [])
-          .find((value) => typeof value === "string");
-        throw new Error(
-          (Array.isArray(policyErrors) && policyErrors.length ? policyErrors.join(" ") : null)
-          || fieldErrors
-          || completion.message
-          || completion.detail
-          || "We couldn’t complete your registration. Please try again.",
-        );
-      }
-      if (!completion.identity_token) throw new Error("Your account may have been created, but the service returned an incomplete response. Please contact support.");
-
-      localStorage.setItem("token", completion.identity_token);
-      if (completion.refresh_token) localStorage.setItem("refreshToken", completion.refresh_token);
-      toast.success(completion.message || "Your Payarena account has been created.");
-      navigate("/register/verified", {
-        state: {
-          ...state,
-          identity: { type: idType, number: idNumber },
-          biodataToken: verifiedBiodata.biodata_token,
-          biodataExpiresIn: verifiedBiodata.expires_in,
-          walletAccount: verifiedBiodata.wallet_account,
-          kycVerified: verifiedBiodata.kyc_verified,
-          reference: verifiedBiodata.reference,
-          completion,
-          successType: "registration",
-        },
-      });
-    } catch (error) {
-      const message = error instanceof TypeError
-        ? "We couldn’t connect to Payarena. Check your internet connection and try again."
-        : error.message || "We couldn’t complete your registration. Please check the code and try again.";
-      toast.error(message);
-    } finally {
-      setIsSubmitting(false);
-    }
+    toast.success("Verification code saved. Create a password to finish registration.");
+    navigate("/register/password", {
+      state: {
+        ...state,
+        identity: { type: idType, number: idNumber },
+        biodataOtp: otpCode,
+        verifiedBiodata,
+      },
+    });
   };
 
   return (
     <main className="min-h-screen bg-[#fdfafa] font-host-grotesk text-[#252528]">
       <header className="relative flex h-[40px] items-center justify-center border-b border-[#dedee0] bg-[#f4f4f6]">
-        <Link to="/register/password" state={state} aria-label="Back to password setup" className="absolute left-3 inline-flex h-8 w-8 items-center justify-center rounded-full text-[#666] hover:bg-[#e9e9eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#079cff]">
+        <Link to="/register/delivery" state={state} aria-label="Back to delivery address" className="absolute left-3 inline-flex h-8 w-8 items-center justify-center rounded-full text-[#666] hover:bg-[#e9e9eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#079cff]">
           <FiArrowLeft className="h-[16px] w-[16px]" />
         </Link>
         <img className="h-[34px] w-[78px] object-contain" src={payarenaLogo} alt="Payarena" />
       </header>
 
       <section className="relative flex min-h-[calc(100svh-40px)] justify-center px-4 pb-8 pt-20 mobile-sm:px-5 mobile-sm:pb-10 mobile-sm:pt-[clamp(54px,10vh,94px)]">
-        <div className="absolute right-4 top-4 flex h-12 w-12 items-center justify-center rounded-full p-[5px] mobile-sm:right-[6vw] mobile-sm:top-4 mobile-sm:h-[52px] mobile-sm:w-[52px]" style={{ background: "conic-gradient(#f2632a 0 80%, #ffd0ad 80% 100%)" }} aria-label="Step 1 of 5">
-          <span className="flex h-full w-full items-center justify-center rounded-full bg-[#fdfafa] font-inter text-[10px] font-semibold">1/5</span>
+        <div className="absolute right-4 top-4 flex h-12 w-12 items-center justify-center rounded-full p-[5px] mobile-sm:right-[6vw] mobile-sm:top-4 mobile-sm:h-[52px] mobile-sm:w-[52px]" style={{ background: "conic-gradient(#f2632a 0 80%, #ffd0ad 80% 100%)" }} aria-label="Step 6 of 7">
+          <span className="flex h-full w-full items-center justify-center rounded-full bg-[#fdfafa] font-inter text-[10px] font-semibold">6/7</span>
         </div>
 
         <div className="h-fit w-full max-w-[424px] rounded-[22px] border border-[#e4e4e6] bg-[#f5f5f7] px-4 pb-6 pt-6 mobile-sm:px-8 mobile-sm:pb-8 mobile-sm:pt-8">
@@ -217,7 +168,7 @@ export default function RegisterIdentity() {
           <section role="dialog" aria-modal="true" aria-labelledby="email-otp-title" className="w-full max-w-[440px] rounded-[22px] border border-[#e4e4e6] bg-[#f5f5f7] px-5 py-7 shadow-2xl sm:px-9 sm:py-9">
             <h2 id="email-otp-title" className="text-center font-montserrat text-[22px] font-medium sm:text-[24px]">Verify your email</h2>
             <p className="mx-auto mt-2 max-w-[340px] text-center text-[14px] leading-relaxed text-[#555b65]">
-              Enter the six-digit code sent to <span className="font-medium text-[#159fe0]">{state.email}</span> to finish creating your account.
+              Enter the six-digit code sent to <span className="font-medium text-[#159fe0]">{state.email}</span> to continue to password setup.
             </p>
             <form className="mt-7" onSubmit={submitOtp}>
               <label htmlFor="registration-email-otp" className="block text-[13px] font-medium text-[#52525a]">Email verification code</label>

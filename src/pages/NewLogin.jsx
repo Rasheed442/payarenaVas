@@ -71,7 +71,7 @@ export default function NewLogin() {
       else localStorage.removeItem("rememberedEmail");
 
       toast.success(result.message || "You’re signed in.");
-      navigate("/dashboard");
+      navigate("/dashboard-v2");
     } catch (error) {
       const message = error instanceof TypeError
         ? "We couldn’t connect to Payarena. Check your internet connection and try again."
@@ -92,9 +92,9 @@ export default function NewLogin() {
       </header>
 
       <section className="relative flex min-h-[calc(100svh-62px)] justify-center px-4 pb-10 pt-20 sm:px-6 sm:pb-12 sm:pt-[clamp(64px,9vh,92px)]">
-        <div className="absolute right-4 top-5 flex h-[52px] w-[52px] items-center justify-center rounded-full p-[5px] sm:right-[6vw] sm:top-7 sm:h-[66px] sm:w-[66px]" style={{ background: "conic-gradient(#f2632a 0 80%, #ffd0ad 80% 100%)" }} aria-label="Step 1 of 5">
+        {/* <div className="absolute right-4 top-5 flex h-[52px] w-[52px] items-center justify-center rounded-full p-[5px] sm:right-[6vw] sm:top-7 sm:h-[66px] sm:w-[66px]" style={{ background: "conic-gradient(#f2632a 0 80%, #ffd0ad 80% 100%)" }} aria-label="Step 1 of 5">
           <span className="flex h-full w-full items-center justify-center rounded-full bg-[#fdfafa] font-inter text-[10px] font-semibold sm:text-xs">1/5</span>
-        </div>
+        </div> */}
 
         <div className="h-fit w-full max-w-[460px] rounded-[22px] border border-[#e4e4e6] bg-[#f5f5f7] px-5 pb-7 pt-7 sm:px-10 sm:pb-10 sm:pt-9">
           <h1 className="text-center font-montserrat text-[24px] font-medium leading-tight sm:text-[26px]">Welcome Back!</h1>

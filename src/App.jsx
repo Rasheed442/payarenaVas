@@ -51,7 +51,8 @@ import RegisterDelivery from "./pages/RegisterDelivery";
 import RegisterPassword from "./pages/RegisterPassword";
 import RegisterIdentity from "./pages/RegisterIdentity";
 import NewLogin from "./pages/NewLogin";
-import NewDashboard from "./pages/NewDashboard";
+import DashboardV2 from "./pages/DashboardV2";
+import HomePage from "./pages/DashboardPages/Home";
 
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -204,7 +205,12 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/dashboard",
-        element: <NewDashboard />,
+        element: <DashboardLayout />,
+        children: [{ path: "/dashboard", element: <HomePage /> }],
+      },
+      {
+        path: "/dashboard-v2",
+        element: <DashboardV2 />,
       },
 
       {

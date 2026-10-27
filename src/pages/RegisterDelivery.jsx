@@ -27,7 +27,7 @@ export default function RegisterDelivery() {
   const update = (event) => setAddress((current) => ({ ...current, [event.target.name]: event.target.value }));
   const continueToAccount = (event) => {
     event.preventDefault();
-    navigate("/register/password", {
+    navigate("/register/identity", {
       state: { ...navigationState, address },
     });
   };
@@ -44,8 +44,8 @@ export default function RegisterDelivery() {
       </header>
 
       <section className="relative flex min-h-[calc(100svh-48px)] justify-center px-4 pb-8 pt-20 mobile-sm:px-5 mobile-sm:pb-10 mobile-sm:pt-[clamp(54px,10vh,94px)]">
-        <div className="absolute right-4 top-4 flex h-12 w-12 items-center justify-center rounded-full p-[5px] mobile-sm:right-[6vw] mobile-sm:top-5 mobile-sm:h-[52px] mobile-sm:w-[52px]" style={{ background: "conic-gradient(#f2632a 0 80%, #ffd0ad 80% 100%)" }} aria-label="Step 5 of 5">
-          <span className="flex h-full w-full items-center justify-center rounded-full bg-[#fdfafa] font-inter text-[10px] font-semibold">5/5</span>
+        <div className="absolute right-4 top-4 flex h-12 w-12 items-center justify-center rounded-full p-[5px] mobile-sm:right-[6vw] mobile-sm:top-5 mobile-sm:h-[52px] mobile-sm:w-[52px]" style={{ background: "conic-gradient(#f2632a 0 80%, #ffd0ad 80% 100%)" }} aria-label="Step 5 of 7">
+          <span className="flex h-full w-full items-center justify-center rounded-full bg-[#fdfafa] font-inter text-[10px] font-semibold">5/7</span>
         </div>
 
         <div className="h-fit w-full max-w-[424px] rounded-[22px] border border-[#e4e4e6] bg-[#f5f5f7] px-4 pb-6 pt-6 mobile-sm:px-8 mobile-sm:pb-8 mobile-sm:pt-8">

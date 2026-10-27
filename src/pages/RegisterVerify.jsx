@@ -188,9 +188,9 @@ export default function RegisterVerify() {
         <div
           className="absolute right-4 top-4 flex h-12 w-12 items-center justify-center rounded-full p-[5px] mobile-sm:right-[6vw] mobile-sm:top-10 mobile-sm:h-[66px] mobile-sm:w-[66px] mobile-sm:p-[7px]"
           style={{ background: "conic-gradient(#f2632a 0 80%, #ffd0ad 80% 100%)" }}
-          aria-label="Step 2 of 5"
+          aria-label="Step 2 of 7"
         >
-          <span className="flex h-full w-full items-center justify-center rounded-full bg-[#fdfafa] font-inter text-xs font-semibold">2/5</span>
+          <span className="flex h-full w-full items-center justify-center rounded-full bg-[#fdfafa] font-inter text-xs font-semibold">2/7</span>
         </div>
 
         <div className="h-fit w-full max-w-[465px] rounded-[22px] border border-[#e4e4e6] bg-[#f5f5f7] px-4 pb-6 pt-7 mobile-sm:rounded-[26px] mobile-sm:px-10 mobile-sm:pb-8 mobile-sm:pt-10">

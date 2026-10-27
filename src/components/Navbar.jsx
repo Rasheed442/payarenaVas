@@ -50,7 +50,7 @@ const Navbar = () => {
     location.pathname === "/" ? setisHomePage(true) : setisHomePage(false);
   }, [location.pathname]);
   const handleNavigation = () => {
-    navigate(location.pathname === "/" ? "/desktop" : "/register");
+    navigate( "/register");
   };
   return (
     <>

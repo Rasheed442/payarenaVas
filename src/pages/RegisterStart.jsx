@@ -81,9 +81,9 @@ export default function RegisterStart() {
         <div
           className="absolute right-4 top-4 flex h-12 w-12 items-center justify-center rounded-full p-[5px] mobile-sm:right-[6vw] mobile-sm:top-8 mobile-sm:h-[54px] mobile-sm:w-[54px] mobile-sm:p-[6px]"
           style={{ background: "conic-gradient(#f2632a 0 80%, #ffd0ad 80% 100%)" }}
-          aria-label="Step 1 of 5"
+          aria-label="Step 1 of 7"
         >
-          <span className="flex h-full w-full items-center justify-center rounded-full bg-[#fdfafa] font-inter text-[11px] font-semibold">1/5</span>
+          <span className="flex h-full w-full items-center justify-center rounded-full bg-[#fdfafa] font-inter text-[11px] font-semibold">1/7</span>
         </div>
 
         <div className="h-fit w-full max-w-[424px] rounded-[22px] border border-[#ebebec] bg-[#f5f5f7] px-5 pb-6 pt-7 shadow-[0_1px_2px_rgba(0,0,0,0.02)] mobile-sm:px-8 mobile-sm:pb-8 mobile-sm:pt-8">

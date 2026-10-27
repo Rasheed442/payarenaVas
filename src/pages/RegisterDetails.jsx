@@ -61,8 +61,8 @@ export default function RegisterDetails() {
       </header>
 
       <section className="relative flex min-h-[calc(100svh-88px)] justify-center px-4 pb-8 pt-16 mobile-sm:px-5 mobile-sm:pb-10 mobile-sm:pt-6">
-        <div className="absolute right-4 top-3 flex h-12 w-12 items-center justify-center rounded-full p-[5px] mobile-sm:right-[6vw] mobile-sm:top-6 mobile-sm:h-[58px] mobile-sm:w-[58px] mobile-sm:p-[6px]" style={{ background: "conic-gradient(#f2632a 0 80%, #ffd0ad 80% 100%)" }} aria-label="Step 4 of 5">
-          <span className="flex h-full w-full items-center justify-center rounded-full bg-[#fdfafa] font-inter text-[11px] font-semibold">4/5</span>
+        <div className="absolute right-4 top-3 flex h-12 w-12 items-center justify-center rounded-full p-[5px] mobile-sm:right-[6vw] mobile-sm:top-6 mobile-sm:h-[58px] mobile-sm:w-[58px] mobile-sm:p-[6px]" style={{ background: "conic-gradient(#f2632a 0 80%, #ffd0ad 80% 100%)" }} aria-label="Step 4 of 7">
+          <span className="flex h-full w-full items-center justify-center rounded-full bg-[#fdfafa] font-inter text-[11px] font-semibold">4/7</span>
         </div>
 
         <div className="h-fit w-full max-w-[424px] rounded-[22px] border border-[#e4e4e6] bg-[#f5f5f7] px-4 pb-6 pt-6 mobile-sm:px-[34px] mobile-sm:pb-8 mobile-sm:pt-7">

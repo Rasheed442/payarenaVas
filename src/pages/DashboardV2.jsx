@@ -199,7 +199,16 @@ export default function DashboardV2() {
     }
 
     return (
-      <Link key={label} to={to} className={`${base} ${idle}`}>
+      <Link
+        key={label}
+        to={to}
+        state={{ fromDashboard: true, returnTo: "/dashboard-v2" }}
+        onClick={() => {
+          sessionStorage.setItem("fromDashboard", "true");
+          sessionStorage.setItem("returnTo", "/dashboard-v2");
+        }}
+        className={`${base} ${idle}`}
+      >
         {inner}
       </Link>
     );
@@ -222,7 +231,7 @@ export default function DashboardV2() {
           className="flex items-center gap-2.5 px-1.5 pt-1"
         >
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#ff8a3d] to-[#e8520a] text-[17px] font-bold text-white">
-            P
+
           </span>
           <span>
             <span className="block text-[17px] font-bold leading-tight text-white">payarena</span>
@@ -465,6 +474,11 @@ export default function DashboardV2() {
                       <Link
                         key={label}
                         to={href}
+                        state={{ fromDashboard: true, returnTo: "/dashboard-v2" }}
+                        onClick={() => {
+                          sessionStorage.setItem("fromDashboard", "true");
+                          sessionStorage.setItem("returnTo", "/dashboard-v2");
+                        }}
                         className={`${card} flex flex-col items-center gap-2 px-2 py-4 text-[12px] font-medium transition-shadow hover:shadow-md ${muted ? "text-[#8a817b]" : ""
                           }`}
                       >
@@ -506,10 +520,13 @@ export default function DashboardV2() {
                     </div>
                   </button>
 
-                  <a
-                    href="/payment/airtime_recharge"
-                    target=""
-                    rel="noopener noreferrer"
+                  <Link
+                    to="/payment/airtime_recharge"
+                    state={{ fromDashboard: true, returnTo: "/dashboard-v2" }}
+                    onClick={() => {
+                      sessionStorage.setItem("fromDashboard", "true");
+                      sessionStorage.setItem("returnTo", "/dashboard-v2");
+                    }}
                     className="relative flex min-h-[150px] flex-col justify-between overflow-hidden rounded-2xl bg-[#fdeee3] p-5"
                   >
                     <FiZap
@@ -528,7 +545,7 @@ export default function DashboardV2() {
                         Pay now <FiArrowRight size={12} />
                       </p>
                     </div>
-                  </a>
+                  </Link>
                 </div>
               </div>
 

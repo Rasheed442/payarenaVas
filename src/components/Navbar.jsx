@@ -62,8 +62,23 @@ const Navbar = () => {
   const [isHomePage, setisHomePage] = useState(true);
   const [currPath, setcurrPath] = useState("/");
   const location = useLocation();
+  const isFromDashboard = Boolean(
+    location.state?.fromDashboard ||
+    sessionStorage.getItem("fromDashboard") === "true"
+  );
+  const returnPath =
+    location.state?.returnTo ||
+    sessionStorage.getItem("returnTo") ||
+    "/dashboard-v2";
+
   useEffect(() => {
-    location.pathname === "/" ? setisHomePage(true) : setisHomePage(false);
+    if (location.pathname === "/") {
+      setisHomePage(true);
+      sessionStorage.removeItem("fromDashboard");
+      sessionStorage.removeItem("returnTo");
+    } else {
+      setisHomePage(false);
+    }
   }, [location.pathname]);
   const handleNavigation = () => {
     navigate( "/register");
@@ -204,58 +219,59 @@ const Navbar = () => {
             <div className="flex items-center gap-[2rem]">
               {/* 2nd country */}
               <Countries />
-               {isLoggedIn() ? (
-      <span className="font-generalsans-medium text-[.75rem] text-black">
-        Hello, {user?.FirstName || "User"}
-      </span>
-    ) : (
-              <Link
-                to="/login"
-                className="font-generalsans-medium text-[.75rem] text-black hover:text-accent1 cursor-pointer"
-              >
-                Login
-              </Link>
+              {isFromDashboard ? (
+                /* When routed from sideLinks: Login & Sign up buttons are commented out and replaced with a return button */
+                <button
+                  onClick={() => {
+                    sessionStorage.removeItem("fromDashboard");
+                    sessionStorage.removeItem("returnTo");
+                    navigate(returnPath);
+                  }}
+                  className="bg-[#F58220] text-white text-sm px-4 py-2 rounded font-generalsans-medium hover:bg-[#e07110] transition-colors"
+                >
+                  Return to Dashboard
+                </button>
+              ) : (
+                <>
+                  {isLoggedIn() ? (
+                    <span className="font-generalsans-medium text-[.75rem] text-black">
+                      Hello, {user?.FirstName || "User"}
+                    </span>
+                  ) : (
+                    <Link
+                      to="/login"
+                      className="font-generalsans-medium text-[.75rem] text-black hover:text-accent1 cursor-pointer"
+                    >
+                      Login
+                    </Link>
                   )}
-                {/* <Button
-                text="Get Started"
-                disabled={true}
-                background="#F58220"
-                color="#fff"
-                width="120px"
-                height="40px"
-                borderRadius="9px"
-                fontSize="13px"
-                fontFamily="GeneralSans-Regular, sans-serif"
-                style={
-                  isHomePage ? { boxShadow: "0px 4px 20px 0px #00000059" } : {}
-                }
-                action={handleNavigation}
-              /> */}
-              <div>
-  {isLoggedIn() ? (
-    <button
-    onClick={() => navigate("/dashboard")}
-      className="bg-[#F58220] w-full text-white text-sm px-4 py-2 rounded"
-    >
-      Return to Dashboard
-    </button>
-  ) : (
-    <Button
-          text="Sign up"
-      background="#F58220"
-      color="#fff"
-      width="120px"
-      height="40px"
-      borderRadius="9px"
-      fontSize="13px"
-      fontFamily="GeneralSans-Regular, sans-serif"
-      style={
-        isHomePage ? { boxShadow: "0px 4px 20px 0px #00000059" } : {}
-      }
-      action={handleNavigation}
-    />
-  )}
-            </div>
+                  <div>
+                    {isLoggedIn() ? (
+                      <button
+                        onClick={() => navigate("/dashboard")}
+                        className="bg-[#F58220] w-full text-white text-sm px-4 py-2 rounded"
+                      >
+                        Return to Dashboard
+                      </button>
+                    ) : (
+                      <Button
+                        text="Sign up"
+                        background="#F58220"
+                        color="#fff"
+                        width="120px"
+                        height="40px"
+                        borderRadius="9px"
+                        fontSize="13px"
+                        fontFamily="GeneralSans-Regular, sans-serif"
+                        style={
+                          isHomePage ? { boxShadow: "0px 4px 20px 0px #00000059" } : {}
+                        }
+                        action={handleNavigation}
+                      />
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </NavWrapper>
         </div>

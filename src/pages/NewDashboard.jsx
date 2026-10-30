@@ -208,6 +208,11 @@ export default function NewDashboard() {
               <NavLink
                 key={label}
                 to={to}
+                state={{ fromDashboard: true, returnTo: "/dashboard" }}
+                onClick={() => {
+                  sessionStorage.setItem("fromDashboard", "true");
+                  sessionStorage.setItem("returnTo", "/dashboard");
+                }}
                 title={label}
                 className={({ isActive }) =>
                   `${baseClassName} ${isActive && label !== "Wallet"

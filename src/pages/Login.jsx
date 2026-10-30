@@ -65,10 +65,15 @@ const Login = () => {
   useEffect(() => {
     if (userData?.Success) {
       localStorage.setItem("token", userData?.Data?.access_token);
+      localStorage.setItem("mall-token", userData?.Data?.access_token); // Also store as mall-token for SSO
       localStorage.setItem(
         "userDetails",
         JSON.stringify(userData?.Data?.userProfile)
       );
+      localStorage.setItem(
+        "mallUserInfo",
+        JSON.stringify(userData?.Data?.userProfile)
+      ); // Also store as mallUserInfo for SSO
       setProfileFirstName(userData?.Data?.userProfile?.FirstName);
       setProfileLastName(userData?.Data?.userProfile?.Surname);
       setProfilePic(userData?.Data?.userProfile?.ProfilePhoto);

@@ -91,22 +91,31 @@ const recentTransactions = [
   },
 ];
 
-const sideLinks = [
+function getMallAuthLink() {
+  try {
+    const token = localStorage.getItem("token") || localStorage.getItem("mall-token");
+    const mallUrl = "https://mall.payarena.com";
+    // import.meta.env.VITE_MALL_URL ||
+    if (!token) return mallUrl;
+
+    // Pass token as query parameter
+    return `${mallUrl}/?token=${token}`;
+  } catch (error) {
+    console.error("Failed to generate Mall auth link:", error);
+    return "https://mall.payarena.com/";
+  }
+}
+
+const sideLinksBase = [
   { label: "Home", icon: FiHome, to: "/dashboard" },
   {
     label: "VAS",
     icon: FiGrid,
-    to: "https://www.payarena.com/",
-    external: true,
+    to: "/payment/airtime_recharge",
+    external: false,
   },
-  {
-    label: "Mall",
-    icon: FiShoppingBag,
-    to: "https://mall.payarena.com/",
-    external: true,
-  },
-  { label: "Wallet", icon: FiCreditCard, to: "/dashboard" },
-  { label: "Profile", icon: FiUser, to: "/settings" },
+  { label: "Wallet", icon: FiCreditCard, to: "" },
+  { label: "Profile", icon: FiUser, to: "" },
 ];
 
 function getUserDetails() {
@@ -130,6 +139,17 @@ export default function NewDashboard() {
 
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [search, setSearch] = useState("");
+
+  // Generate sideLinks dynamically to include auth token for Mall
+  const sideLinks = useMemo(() => [
+    ...sideLinksBase,
+    {
+      label: "Mall",
+      icon: FiShoppingBag,
+      to: getMallAuthLink(),
+      external: true,
+    },
+  ], []);
 
   const filteredTransactions = recentTransactions.filter(
     (transaction) =>
@@ -190,10 +210,9 @@ export default function NewDashboard() {
                 to={to}
                 title={label}
                 className={({ isActive }) =>
-                  `${baseClassName} ${
-                    isActive && label !== "Wallet"
-                      ? "bg-[#f2632a] text-white"
-                      : "text-[#69696d] hover:bg-[#f6f6f7]"
+                  `${baseClassName} ${isActive && label !== "Wallet"
+                    ? "bg-[#f2632a] text-white"
+                    : "text-[#69696d] hover:bg-[#f6f6f7]"
                   }`
                 }
               >
@@ -367,7 +386,7 @@ export default function NewDashboard() {
 
                 {/* Payarena Mall banner */}
                 <a
-                  href="https://mall.payarena.com/"
+                  href={getMallAuthLink()}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-7 flex min-h-[58px] items-center gap-3 rounded-[17px] bg-[#fff0e7] px-4 sm:px-5"
@@ -392,8 +411,8 @@ export default function NewDashboard() {
 
                 {/* VAS banner */}
                 <a
-                  href="https://www.payarena.com/"
-                  target="_blank"
+                  href="/payment/airtime_recharge"
+                  target=""
                   rel="noopener noreferrer"
                   className="mt-6 flex min-h-[58px] items-center gap-3 rounded-[17px] bg-[#eaf3ff] px-4 sm:px-5"
                 >
@@ -497,11 +516,10 @@ export default function NewDashboard() {
 
                           <span className="shrink-0 text-right">
                             <span
-                              className={`block text-[10px] ${
-                                positive
-                                  ? "text-[#35b54b]"
-                                  : "text-[#36363a]"
-                              }`}
+                              className={`block text-[10px] ${positive
+                                ? "text-[#35b54b]"
+                                : "text-[#36363a]"
+                                }`}
                             >
                               {amount}
                             </span>

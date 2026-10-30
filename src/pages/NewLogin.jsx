@@ -55,6 +55,7 @@ export default function NewLogin() {
       if (!result.identity_token) throw new Error("The sign-in service returned an incomplete response. Please try again.");
 
       localStorage.setItem("token", result.identity_token);
+      localStorage.setItem("mall-token", result.identity_token); // Also store as mall-token for SSO
       if (result.refresh_token) localStorage.setItem("refreshToken", result.refresh_token);
       const profile = {
         FirstName: result.first_name || "",
@@ -63,6 +64,7 @@ export default function NewLogin() {
         ProfilePhoto: result.profile_photo || "",
       };
       localStorage.setItem("userDetails", JSON.stringify(profile));
+      localStorage.setItem("mallUserInfo", JSON.stringify(profile)); // Also store as mallUserInfo for SSO
       setProfileFirstName(profile.FirstName);
       setProfileLastName(profile.Surname);
       setProfilePic(profile.ProfilePhoto);
@@ -102,10 +104,10 @@ export default function NewLogin() {
             Enter your email and password to get back<br className="hidden sm:block" /> to your <span className="text-[#159fdf]">Pay</span><span className="text-[#ed6a2f]">arena</span> account.
           </p>
 
-          <div className="mx-auto mt-7 flex max-w-[340px] gap-3 rounded-lg bg-[#edf5ff] px-4 py-3 text-[13px] leading-[1.5] text-[#159fe0] shadow-[0_2px_5px_rgba(22,55,80,0.13)] sm:mt-8">
+          {/* <div className="mx-auto mt-7 flex max-w-[340px] gap-3 rounded-lg bg-[#edf5ff] px-4 py-3 text-[13px] leading-[1.5] text-[#159fe0] shadow-[0_2px_5px_rgba(22,55,80,0.13)] sm:mt-8">
             <FiInfo className="mt-0.5 h-[17px] w-[17px] shrink-0" aria-hidden="true" />
             <span>This email is registered on Payarena VAS platform. Please enter your password to continue.</span>
-          </div>
+          </div> */}
 
           <form className="mx-auto mt-7 max-w-[380px] sm:mt-8" onSubmit={submitLogin} noValidate>
             <label className="block text-[13px] font-medium text-[#52525a]" htmlFor="login-email">Email</label>

@@ -67,6 +67,7 @@ export default function RegisterPassword() {
       if (!completion.identity_token) throw new Error("Your account may have been created, but the service returned an incomplete response. Please contact support.");
 
       localStorage.setItem("token", completion.identity_token);
+      localStorage.setItem("mall-token", completion.identity_token); // Also store as mall-token for SSO
       if (completion.refresh_token) localStorage.setItem("refreshToken", completion.refresh_token);
       toast.success(completion.message || "Your Payarena account has been created.");
       navigate("/register/verified", {

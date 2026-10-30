@@ -21,6 +21,22 @@ const Footer = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Helper to generate Mall auth link with token
+  const getMallAuthLink = () => {
+    try {
+      const token = localStorage.getItem("token") || localStorage.getItem("mall-token");
+      const mallUrl = import.meta.env.VITE_MALL_URL || "https://mall.payarena.com";
+
+      if (!token) return mallUrl;
+
+      // Pass token as query parameter
+      return `${mallUrl}/?token=${token}`;
+    } catch (error) {
+      console.error("Failed to generate Mall auth link:", error);
+      return "https://mall.payarena.com/";
+    }
+  };
+
   if (location.pathname === "/") {
     return null;
   }
@@ -54,7 +70,7 @@ const Footer = () => {
               Payment
             </Link>
             <a
-              href="https://mall.payarena.com/"
+              href={getMallAuthLink()}
               target="_blank"
               className="footer-link"
             >

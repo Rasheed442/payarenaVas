@@ -21,6 +21,22 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const user = getUser();
 
+  // Helper to generate Mall auth link with token
+  const getMallAuthLink = () => {
+    try {
+      const token = localStorage.getItem("token") || localStorage.getItem("mall-token");
+      const mallUrl =  "https://mall.payarena.com";
+
+      if (!token) return mallUrl;
+
+      // Pass token as query parameter
+      return `${mallUrl}/?token=${token}`;
+    } catch (error) {
+      console.error("Failed to generate Mall auth link:", error);
+      return "https://mall.payarena.com/";
+    }
+  };
+
   // const isLoggedIn = !!localStorage.getItem("bearerToken");
 
   const storedCatalog = JSON.parse(sessionStorage.getItem("catalogs"));
@@ -89,7 +105,7 @@ const Navbar = () => {
             </div>
             <div className="flex items-center gap-5">
               <Link
-                to="/login/new"
+                to="/login"
                 className={
                   location.pathname === "/lo"
                     ? "font-generalsans-medium text-[.75rem] text-white hover:text-accent1 cursor-pointer hidden"
@@ -171,7 +187,7 @@ const Navbar = () => {
                 Payment
               </Link>
               <a
-                href="https://mall.payarena.com/"
+                href={getMallAuthLink()}
                 target="_blank"
                 className="text-black font-generalsans-medium text-[.75rem]"
               >
@@ -194,7 +210,7 @@ const Navbar = () => {
       </span>
     ) : (
               <Link
-                to="/login/new"
+                to="/login"
                 className="font-generalsans-medium text-[.75rem] text-black hover:text-accent1 cursor-pointer"
               >
                 Login

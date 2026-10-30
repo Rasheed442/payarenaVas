@@ -26,6 +26,22 @@ const Landing = () => {
 
   const { countryCode } = useContext(countryContext);
   console.log("landing page", countryCode);
+
+  // Helper to generate Mall auth link with token as query parameter
+  const getMallAuthLink = () => {
+    try {
+      const token = localStorage.getItem("token") || localStorage.getItem("mall-token");
+      const mallUrl = import.meta.env.VITE_MALL_URL || "https://mall.payarena.com";
+
+      if (!token) return mallUrl;
+
+      // Pass token as query parameter
+      return `${mallUrl}/?token=${token}`;
+    } catch (error) {
+      console.error("Failed to generate Mall auth link:", error);
+      return "https://mall.payarena.com/";
+    }
+  };
   const dispatch = useDispatch();
   const [screenHeight, setScreenHeight] = useState(window.innerHeight);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
@@ -205,7 +221,7 @@ const Landing = () => {
                       {icons.pay}
                     </PayIcon>
                     <img src={iconDivider} alt="" className="iconDivider" />
-                    <ShopIcon href="https://mall.payarena.com/" target="_blank">
+                    <ShopIcon href={getMallAuthLink()} target="_blank">
                       {icons.shop}
                     </ShopIcon>
                     <img src={iconDivider} alt="" className="iconDivider" />

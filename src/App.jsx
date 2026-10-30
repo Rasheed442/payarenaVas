@@ -53,6 +53,7 @@ import RegisterIdentity from "./pages/RegisterIdentity";
 import NewLogin from "./pages/NewLogin";
 import DashboardV2 from "./pages/DashboardV2";
 import HomePage from "./pages/DashboardPages/Home";
+import AuthReceiver from "./pages/AuthReceiver";
 
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -62,6 +63,8 @@ const Contact = lazy(() => import("./pages/Contact"));
 
 export const router = createBrowserRouter([
   { path: "/desktop", element: <DesktopLanding /> },
+  { path: "/auth/:token/:userData", element: <AuthReceiver /> },
+  { path: "/auth/dashboard/:token/:userData", element: <AuthReceiver /> },
   { path: "/login/new", element: <NewLogin /> },
   { path: "/register/start", element: <RegisterStart /> },
   { path: "/register/verify", element: <RegisterVerify /> },

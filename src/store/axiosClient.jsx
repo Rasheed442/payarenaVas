@@ -3,9 +3,13 @@ import axios from "axios";
 export const client = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
 });
-const token = localStorage.getItem("token");
 
 client.interceptors.request.use((config) => {
+  // Check for mall-token first (SSO token), then fall back to regular token
+  const mallToken = localStorage.getItem("mall-token");
+  const regularToken = localStorage.getItem("token");
+  const token = mallToken || regularToken;
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -19,8 +23,12 @@ client.interceptors.response.use(
   },
   function (error) {
     if (401 === error?.response?.status) {
-      window.location = "/";
-      localStorage.clear();
+      // Clear all auth-related localStorage items
+      localStorage.removeItem("mall-token");
+      localStorage.removeItem("mallUserInfo");
+      localStorage.removeItem("token");
+      // Redirect to login page
+      window.location = "/login/new";
     } else if (
       "Request failed with status code 500" === error.message ||
       error?.response?.status >= 500

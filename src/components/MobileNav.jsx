@@ -12,6 +12,22 @@ const MobileNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Helper to generate Mall auth link with token as query parameter
+  const getMallAuthLink = () => {
+    try {
+      const token = localStorage.getItem("token") || localStorage.getItem("mall-token");
+      const mallUrl = "https://mall.payarena.com";
+
+      if (!token) return mallUrl;
+
+      // Pass token as query parameter
+      return `${mallUrl}/?token=${token}`;
+    } catch (error) {
+      console.error("Failed to generate Mall auth link:", error);
+      return "https://mall.payarena.com/";
+    }
+  };
+
   const handleNavigation = () => {
     navigate("/register");
   };
@@ -138,7 +154,7 @@ const MobileNav = () => {
               </Link>
 
               <a
-                href="https://mall.payarena.com/"
+                href={getMallAuthLink()}
                 target="_blank"
                 onClick={() => {
                   setShowNav(false);

@@ -41,9 +41,9 @@ const quickActions = [
   { label: "Airtime", icon: FiSmartphone, fg: "#f26a10", bg: "#fff0e6", href: "/payment/airtime_recharge" },
   { label: "Data", icon: FiWifi, fg: "#1b9ad6", bg: "#e8f5fd", href: "/payment/data" },
   { label: "Electricity", icon: FiZap, fg: "#f59e0b", bg: "#fff8e1", href: "/payment/electricity" },
-  { label: "Pay bills", icon: FiFileText, fg: "#7c4dff", bg: "#f1ecff", href: "/payments" },
-  { label: "Send", icon: FiSend, fg: "#10a36b", bg: "#e6f8f0", href: "/transfers" },
-  { label: "More", icon: FiMoreHorizontal, fg: "#9a948f", bg: "#f2f0ee", href: "/payments", muted: true },
+  { label: "Pay bills", icon: FiFileText, fg: "#7c4dff", bg: "#f1ecff", href: "/payment/airtime_recharge" },
+  { label: "Transfer", icon: FiSend, fg: "#10a36b", bg: "#e6f8f0", href: "/transfers" },
+  // { label: "More", icon: FiMoreHorizontal, fg: "#9a948f", bg: "#f2f0ee", href: "/payments", muted: true },
 ];
 
 const recentTransactions = [
@@ -146,8 +146,8 @@ export default function DashboardV2() {
     { label: "Home", icon: FiHome, type: "view", onClick: goHome, active: activeView === "home" },
     { label: "VAS", icon: FiGrid, type: "route", to: "/payment/airtime_recharge" },
     { label: "Mall", icon: FiShoppingBag, type: "view", onClick: openMall, active: activeView === "mall", isNew: true },
-    { label: "Wallet", icon: FiCreditCard, type: "route", to: "#" },
-    { label: "Profile", icon: FiUser, type: "route", to: "#" },
+    { label: "Wallet", icon: FiCreditCard, type: "route", to: "/wallet" },
+    { label: "Profile", icon: FiUser, type: "route", to: "/profile" },
   ];
 
   const filteredTransactions = recentTransactions.filter((t) =>
@@ -491,7 +491,7 @@ export default function DashboardV2() {
                   Welcome back, {firstName}
                 </h1>
               </div>
-              <div className={`flex items-center gap-2 rounded-full px-4 py-2 md:px-3.5 md:py-1.5 text-[11.5px] md:text-[11px] font-medium ${chip}`}>
+              <div className={`flex items-center gap-2 rounded-full px-4 py-2 md:px-3.5 md:py-1.5 text-[11.5px] md:text-[11px] font-light ${chip}`}>
                 <FiShield size={12} className="text-[#f26a10]" />
                 Daily limit ₦0 · 0% used
               </div>
@@ -502,340 +502,349 @@ export default function DashboardV2() {
               {/* Center scrollable column */}
               <div className="flex min-w-0 flex-col gap-4 min-md:h-full min-md:overflow-y-auto min-md:pr-2 min-md:pb-4 [scrollbar-width:thin] min-md:[&::-webkit-scrollbar]:w-1.5 min-md:[&::-webkit-scrollbar-thumb]:rounded-full min-md:[&::-webkit-scrollbar-thumb]:bg-[#1a1210]/15 min-md:hover:[&::-webkit-scrollbar-thumb]:bg-[#1a1210]/25">
                 {/* Wallet card */}
-                <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#ff7a22] via-[#f56a10] to-[#e04e05] p-6 md:p-5 text-white shadow-[0_12px_30px_rgba(240,100,20,0.22)]">
-                  <span className="pointer-events-none absolute -right-8 -top-20 h-56 w-56 rounded-full bg-white/10" />
-                  <span className="pointer-events-none absolute -bottom-32 left-[55%] h-64 w-64 rounded-full bg-white/10" />
+            <section className="relative shrink-0 overflow-hidden rounded-3xl bg-gradient-to-br from-[#ff7a22] via-[#f56a10] to-[#e04e05] p-5 text-white shadow-[0_12px_30px_rgba(240,100,20,0.22)] md:p-6">
+  <span className="pointer-events-none absolute -right-8 -top-20 h-56 w-56 rounded-full bg-white/10" />
+  <span className="pointer-events-none absolute -bottom-32 left-[55%] h-64 w-64 rounded-full bg-white/10" />
 
-                  <div className="relative flex flex-wrap items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <button
-                        type="button"
-                        onClick={() => setBalanceVisible((v) => !v)}
-                        aria-label={balanceVisible ? "Hide wallet balance" : "Show wallet balance"}
-                        className="flex items-center gap-2 text-[12.5px] text-white/85"
-                      >
-                        Wallet balance
-                        {balanceVisible ? <FiEye size={12} /> : <FiEyeOff size={12} />}
-                      </button>
+  {/* Top row: balance left, card top right */}
+  <div className="relative flex items-start justify-between gap-4">
+    {/* Left: balance */}
+    <div className="min-w-0 flex-1">
+      <button
+        type="button"
+        onClick={() => setBalanceVisible((v) => !v)}
+        aria-label={balanceVisible ? "Hide wallet balance" : "Show wallet balance"}
+        className="flex items-center gap-2 text-[12.5px] text-white/85"
+      >
+        Wallet balance
+        {balanceVisible ? <FiEye size={12} /> : <FiEyeOff size={12} />}
+      </button>
 
-                      <p className="mt-3 md:mt-2.5 text-[38px] md:text-[30px] font-extrabold leading-none tracking-tight">
-                        {balanceVisible ? (
-                          <>
-                            ₦0<span className="text-[22px] md:text-[20px] font-bold text-white/60">.00</span>
-                          </>
-                        ) : (
-                          "₦••••••••"
-                        )}
-                      </p>
+      <p className="mt-3 text-[30px] font-extrabold leading-none tracking-tight lg:text-[34px]">
+        {balanceVisible ? (
+          <>
+            ₦0<span className="text-[18px] font-bold text-white/60 lg:text-[20px]">.00</span>
+          </>
+        ) : (
+          "₦••••••••"
+        )}
+      </p>
 
-                      <span className="mt-4 md:mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-[11px] font-medium">
-                        <FiTrendingUp size={12} />
-                        +₦0 this week
-                      </span>
-                    </div>
+      <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-[11px] font-medium">
+        <FiTrendingUp size={12} />
+        +₦0 this week
+      </span>
+    </div>
 
-                    {/* Linked card */}
-                        <div
-                          className="w-full min-md:w-[300px] rounded-2xl bg-gradient-to-br from-[#1e120b] via-[#2b1810] to-[#3a2218] p-5 md:p-4 shadow-[0_10px_24px_rgba(0,0,0,0.32)] border border-white/[0.06]"
-                          style={{ aspectRatio: "1.586" }}
-                        >
-                          <div className="flex h-full flex-col justify-between">
-                            {/* Top: label + brand */}
-                            <div className="flex items-center justify-between">
-                              <p className="text-[11px] font-medium text-white/50">Linked card</p>
-                              <span className="rounded-md bg-white px-2 py-0.5 text-[10px] font-extrabold italic text-[#1a3a8f] shadow-sm">
-                                VISA
-                              </span>
-                            </div>
+    {/* Right: linked card (slightly smaller) */}
+    <div className="w-[240px] shrink-0 rounded-2xl border border-white/[0.06] bg-gradient-to-br from-[#1e120b] via-[#2b1810] to-[#3a2218] p-4 shadow-[0_10px_24px_rgba(0,0,0,0.32)] sm:w-[265px] md:w-[295px] xl:w-[330px] xl:p-5">
+      <div className="flex min-h-[155px] flex-col justify-between gap-3 md:min-h-[165px] xl:min-h-[185px]">
+        {/* Top: label + brand */}
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] font-medium text-white/50">Linked card</p>
+          <span className="rounded-md bg-white px-2 py-0.5 text-[10px] font-extrabold italic text-[#1a3a8f] shadow-sm">
+            VISA
+          </span>
+        </div>
 
-                            {/* Middle: chip + card number */}
-                            <div>
-                              {/* Chip */}
-                              <div className="mb-4 h-8 w-11 rounded-md bg-gradient-to-br from-[#e8c76a] to-[#c9a23a] shadow-inner" />
-                              <p className="text-[18px] md:text-[16px] font-semibold tracking-[0.22em]">
-                                •••• &nbsp;•••• &nbsp;•••• &nbsp;8888
-                              </p>
-                            </div>
+        {/* Middle: chip + number */}
+        <div>
+          <div className="mb-3 h-8 w-11 rounded-md bg-gradient-to-br from-[#e8c76a] to-[#c9a23a] shadow-inner xl:h-9 xl:w-12" />
+          <p className="flex items-center gap-2.5 whitespace-nowrap text-[14px] font-semibold tracking-[0.12em] md:text-[15px] xl:gap-3 xl:text-[17px]">
+            <span>••••</span>
+            <span>••••</span>
+            <span>••••</span>
+            <span>8888</span>
+          </p>
+        </div>
 
-                            {/* Bottom: name + expiry */}
-                            <div className="flex items-end justify-between">
-                              <div>
-                                <p className="text-[9px] uppercase tracking-wider text-white/40">Card holder</p>
-                                <p className="mt-0.5 text-[12px] font-semibold text-white/80">{fullName}</p>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-[9px] uppercase tracking-wider text-white/40">Expires</p>
-                                <p className="mt-0.5 text-[12px] font-semibold text-white/80">09/28</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+        {/* Bottom: holder + expiry */}
+        <div className="flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[9px] uppercase tracking-wider text-white/40">Card holder</p>
+            <p className="mt-0.5 truncate text-[12px] font-semibold text-white/80 xl:text-[13px]">
+              {fullName}
+            </p>
+          </div>
+          <div className="shrink-0 text-right">
+            <p className="text-[9px] uppercase tracking-wider text-white/40">Expires</p>
+            <p className="mt-0.5 text-[12px] font-semibold text-white/80 xl:text-[13px]">09/28</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-                      <div className="relative mt-7 md:mt-6 grid grid-cols-3 gap-3 md:gap-2">
-                        <button
-                          type="button"
-                          className="flex h-11 items-center justify-center gap-1.5 md:gap-1 rounded-xl bg-white text-[12.5px] md:text-[11.5px] font-medium text-[#e04e05] hover:bg-white/90"
-                        >
-                          <FiPlus size={14} /> Add money
-                        </button>
-                        <Link
-                          to="/transfers"
-                          className="flex h-11 items-center justify-center gap-1.5 md:gap-1 rounded-xl bg-white/15 text-[12.5px] md:text-[11.5px] font-medium hover:bg-white/25"
-                        >
-                          <FiRepeat size={14} /> Transfer
-                        </Link>
-                        <Link
-                          to="/history"
-                          className="flex h-11 items-center justify-center gap-1.5 md:gap-1 rounded-xl bg-white/15 text-[12.5px] md:text-[11.5px] font-medium hover:bg-white/25"
-                        >
-                          <FiClock size={14} /> Transactions
-                        </Link>
-                      </div>
-                    </section>
+  {/* Actions */}
+  <div className="relative mt-6 grid grid-cols-3 gap-2 md:gap-3">
+    <Link
+      to="/wallet"
+      state={{ fromDashboard: true, returnTo: "/dashboard-v2" }}
+      onClick={() => {
+        sessionStorage.setItem("fromDashboard", "true");
+        sessionStorage.setItem("returnTo", "/dashboard-v2");
+      }}
+      className="flex h-11 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-white px-2 text-[12px] font-medium text-[#e04e05] hover:bg-white/90 md:text-[12.5px]"
+    >
+      <FiPlus size={14} /> Add money
+    </Link>
+    <Link
+      to="#"
+      className="flex h-11 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-white/15 px-2 text-[12px] font-medium hover:bg-white/25 md:text-[12.5px]"
+    >
+      <FiRepeat size={14} /> Transfer
+    </Link>
+    <Link
+      to="#"
+      className="flex h-11 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-white/15 px-2 text-[12px] font-medium hover:bg-white/25 md:text-[12.5px]"
+    >
+      <FiClock size={14} /> Transactions
+    </Link>
+  </div>
+</section> 
 
-                    {/* Quick actions */}
-                    <section>
-                      <div className="mb-3 flex items-center justify-between">
-                        <h2 className="text-[16px] font-medium">Quick actions</h2>
-                        <Link to="/payments" className="flex items-center gap-1 text-[12px] font-semibold text-[#e04e05] hover:underline">
-                          See all <FiArrowRight size={12} />
-                        </Link>
-                      </div>
-                      <div className="grid grid-cols-6 gap-2.5 md:grid-cols-3">
-                        {quickActions.map(({ label, icon: Icon, fg, bg, href, muted }) => (
-                          <Link
-                            key={label}
-                            to={href}
-                            state={{ fromDashboard: true, returnTo: "/dashboard-v2" }}
-                            onClick={() => {
-                              sessionStorage.setItem("fromDashboard", "true");
-                              sessionStorage.setItem("returnTo", "/dashboard-v2");
-                            }}
-                            className={`${card} flex flex-col items-center gap-2 px-2 py-4 text-[12px] font-medium transition-shadow hover:shadow-md ${muted ? "text-[#8a817b]" : ""
-                              }`}
-                          >
-                            <span
-                              className="flex h-11 w-11 items-center justify-center rounded-xl"
-                              style={{ color: fg, backgroundColor: bg }}
-                            >
-                              <Icon size={18} />
-                            </span>
-                            {label}
-                          </Link>
-                        ))}
-                      </div>
-                    </section>
-
-                    {/* Promo cards */}
-                    <div className="grid gap-3 grid-cols-2 md:grid-cols-1">
-                      {/* Payarena Mall promo: opens the embedded Mall view */}
-                      <button
-                        type="button"
-                        onClick={openMall}
-                        className="relative flex min-h-[150px] flex-col justify-between overflow-hidden rounded-2xl bg-[#1a1210] p-5 text-left text-white"
-                      >
-                        <FiShoppingBag
-                          size={96}
-                          strokeWidth={1.2}
-                          className="pointer-events-none absolute -bottom-2 right-2 text-white/10"
-                        />
-                        <span className="relative w-fit rounded-full bg-[#f26a10] px-2.5 py-1 text-[10.5px] font-semibold">
-                          Payarena Mall
-                        </span>
-                        <div className="relative">
-                          <p className="max-w-[210px] text-[16px] font-bold leading-snug">
-                            Shop top products at the best prices
-                          </p>
-                          <p className="mt-2 flex items-center gap-1.5 text-[12px] font-semibold text-[#ff7a22]">
-                            Shop now <FiArrowRight size={12} />
-                          </p>
-                        </div>
-                      </button>
-
+                {/* Quick actions */}
+                <section>
+                  {/* <div className="mb-3 flex items-center justify-between">
+                    <h2 className="text-[16px] font-medium">Quick actions</h2>
+                    <Link to="#" className="flex items-center gap-1 text-[12px] font-semibold text-[#e04e05] hover:underline">
+                      See all <FiArrowRight size={12} />
+                    </Link>
+                  </div> */}
+                  <div className="flex items-center gap-4 justify-center">
+                    {quickActions.map(({ label, icon: Icon, fg, bg, href, muted }) => (
                       <Link
-                        to="/payment/airtime_recharge"
+                        key={label}
+                        to={href}
                         state={{ fromDashboard: true, returnTo: "/dashboard-v2" }}
                         onClick={() => {
                           sessionStorage.setItem("fromDashboard", "true");
                           sessionStorage.setItem("returnTo", "/dashboard-v2");
                         }}
-                        className="relative flex min-h-[150px] flex-col justify-between overflow-hidden rounded-2xl bg-[#fdeee3] p-5"
+                        className={`${card} flex flex-col items-center gap-2 px-10 py-6 text-[12px] font-medium transition-shadow hover:shadow-md ${muted ? "text-[#8a817b]" : ""
+                          }`}
                       >
-                        <FiZap
-                          size={104}
-                          strokeWidth={1}
-                          className="pointer-events-none absolute -bottom-2 right-0 fill-[#ffd9c2] text-[#ffd9c2]"
-                        />
-                        <span className="relative w-fit rounded-full bg-white px-2.5 py-1 text-[10.5px] font-semibold">
-                          Payarena VAS
+                        <span
+                          className="flex h-11 w-11 items-center justify-center rounded-xl"
+                          style={{ color: fg, backgroundColor: bg }}
+                        >
+                          <Icon size={18} />
                         </span>
-                        <div className="relative">
-                          <p className="max-w-[210px] text-[16px] font-bold leading-snug">
-                            Airtime, data, bills and so much more
-                          </p>
-                          <p className="mt-2 flex items-center gap-1.5 text-[12px] font-semibold text-[#e04e05]">
-                            Pay now <FiArrowRight size={12} />
-                          </p>
-                        </div>
+                        {label}
                       </Link>
+                    ))}
+                  </div>
+                </section>
+
+                {/* Promo cards */}
+                <div className="grid gap-3 grid-cols-2 md:grid-cols-1">
+                  {/* Payarena Mall promo: opens the embedded Mall view */}
+                  <button
+                    type="button"
+                    onClick={openMall}
+                    className="relative flex min-h-[150px] flex-col justify-between overflow-hidden rounded-2xl bg-[#1a1210] p-5 text-left text-white"
+                  >
+                    <FiShoppingBag
+                      size={96}
+                      strokeWidth={1.2}
+                      className="pointer-events-none absolute -bottom-2 right-2 text-white/10"
+                    />
+                    <span className="relative w-fit rounded-full bg-[#f26a10] px-2.5 py-1 text-[10.5px] font-semibold">
+                      Payarena Mall
+                    </span>
+                    <div className="relative">
+                      <p className="max-w-[210px] text-[16px] font-bold leading-snug">
+                        Shop top products at the best prices
+                      </p>
+                      <p className="mt-2 flex items-center gap-1.5 text-[12px] font-semibold text-[#ff7a22]">
+                        Shop now <FiArrowRight size={12} />
+                      </p>
                     </div>
+                  </button>
+
+                  <Link
+                    to="/payment/airtime_recharge"
+                    state={{ fromDashboard: true, returnTo: "/dashboard-v2" }}
+                    onClick={() => {
+                      sessionStorage.setItem("fromDashboard", "true");
+                      sessionStorage.setItem("returnTo", "/dashboard-v2");
+                    }}
+                    className="relative flex min-h-[150px] flex-col justify-between overflow-hidden rounded-2xl bg-[#fdeee3] p-5"
+                  >
+                    <FiZap
+                      size={104}
+                      strokeWidth={1}
+                      className="pointer-events-none absolute -bottom-2 right-0 fill-[#ffd9c2] text-[#ffd9c2]"
+                    />
+                    <span className="relative w-fit rounded-full bg-white px-2.5 py-1 text-[10.5px] font-semibold">
+                      Payarena VAS
+                    </span>
+                    <div className="relative">
+                      <p className="max-w-[210px] text-[16px] font-bold leading-snug">
+                        Airtime, data, bills and so much more
+                      </p>
+                      <p className="mt-2 flex items-center gap-1.5 text-[12px] font-semibold text-[#e04e05]">
+                        Pay now <FiArrowRight size={12} />
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right column (fixed on desktop) */}
+              <div className="flex min-w-0 flex-col gap-4 min-md:h-full min-md:overflow-y-auto min-md:pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {/* Send again */}
+                <section className={`${card} p-5 md:p-4`}>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-[16px] md:text-[15px] font-light">Send again</h2>
+                    <Link to="#" className="text-[12px] font-semibold text-[#e04e05] hover:underline">
+                      All
+                    </Link>
+                  </div>
+                  <div className="mt-4 md:mt-3.5 flex gap-3 overflow-x-auto pb-1 -mx-1 px-1">
+                    <Link to="/transfers" className="flex flex-col items-center gap-1.5 shrink-0">
+                      <span className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-dashed border-[#d9d3cd] text-[#8a817b]">
+                        <FiPlus size={15} />
+                      </span>
+                      <span className="text-[11.5px] font-medium">New</span>
+                    </Link>
+                    {sendAgainContacts.map((c) => (
+                      <Link to="/transfers" key={c.name} className="flex flex-col items-center gap-1.5 shrink-0">
+                        <img src={c.avatar} alt={c.name} className="h-12 w-12 rounded-xl object-cover" />
+                        <span className="text-[11.5px] font-medium">{c.name}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+
+                {/* Recent activity */}
+                <section className={`${card} p-5 md:p-4`}>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-[16px] md:text-[15px] font-light">Recent Transaction</h2>
+                    <Link to="#" className="text-[12px] font-semibold text-[#e04e05] hover:underline">
+                      See all
+                    </Link>
+                  </div>
+                  <div className="mt-3 space-y-0.5">
+                    {filteredTransactions.length === 0 && (
+                      <p className="py-5 text-center text-[12px] text-[#8a817b]">No matching activity</p>
+                    )}
+                    {filteredTransactions.map(({ title, detail, amount, icon: Icon, fg, bg, positive }) => (
+                      <Link
+                        to="#"
+                        key={title}
+                        className="flex items-center gap-3 rounded-xl py-2.5 transition-colors hover:bg-[#faf8f6]"
+                      >
+                        <span
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                          style={{ color: fg, backgroundColor: bg }}
+                        >
+                          <Icon size={15} />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[13px] font-semibold">{title}</span>
+                          <span className="mt-0.5 block truncate text-[11px] text-[#8a817b]">{detail}</span>
+                        </span>
+                        <span className={`shrink-0 text-[13px] font-semibold ${positive ? "text-[#0f9d63]" : ""}`}>
+                          {amount}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+
+                {/* Spending */}
+                {/* <section className={`${card} p-5 md:p-4`}>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-[16px] md:text-[15px] font-light">Spending</h2>
+                    <span className="text-[11.5px] text-[#8a817b]">This month</span>
+                  </div>
+                  <p className="mt-3 text-[24px] md:text-[22px] font-extrabold tracking-tight">₦{totalSpending.toLocaleString()}</p>
+
+                  <div className="mt-3 flex h-2 gap-1" role="img" aria-label="Spending breakdown by category">
+                    {spendingData.map((d) => (
+                      <span
+                        key={d.category}
+                        className="h-full rounded-full font-light"
+                        style={{ flexGrow: d.amount, backgroundColor: d.color }}
+                      />
+                    ))}
                   </div>
 
-                  {/* Right column (fixed on desktop) */}
-                  <div className="flex min-w-0 flex-col gap-4 min-md:h-full min-md:overflow-y-auto min-md:pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    {/* Send again */}
-                    <section className={`${card} p-5 md:p-4`}>
-                      <div className="flex items-center justify-between">
-                        <h2 className="text-[16px] md:text-[15px] font-medium">Send again</h2>
-                        <Link to="/transfers" className="text-[12px] font-semibold text-[#e04e05] hover:underline">
-                          All
-                        </Link>
-                      </div>
-                      <div className="mt-4 md:mt-3.5 flex gap-3 overflow-x-auto pb-1 -mx-1 px-1">
-                        <Link to="/transfers" className="flex flex-col items-center gap-1.5 shrink-0">
-                          <span className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-dashed border-[#d9d3cd] text-[#8a817b]">
-                            <FiPlus size={15} />
-                          </span>
-                          <span className="text-[11.5px] font-medium">New</span>
-                        </Link>
-                        {sendAgainContacts.map((c) => (
-                          <Link to="/transfers" key={c.name} className="flex flex-col items-center gap-1.5 shrink-0">
-                            <img src={c.avatar} alt={c.name} className="h-12 w-12 rounded-xl object-cover" />
-                            <span className="text-[11.5px] font-medium">{c.name}</span>
-                          </Link>
-                        ))}
-                      </div>
-                    </section>
-
-                    {/* Recent activity */}
-                    <section className={`${card} p-5 md:p-4`}>
-                      <div className="flex items-center justify-between">
-                        <h2 className="text-[16px] md:text-[15px] font-medium">Recent activity</h2>
-                        <Link to="/history" className="text-[12px] font-semibold text-[#e04e05] hover:underline">
-                          See all
-                        </Link>
-                      </div>
-                      <div className="mt-3 space-y-0.5">
-                        {filteredTransactions.length === 0 && (
-                          <p className="py-5 text-center text-[12px] text-[#8a817b]">No matching activity</p>
-                        )}
-                        {filteredTransactions.map(({ title, detail, amount, icon: Icon, fg, bg, positive }) => (
-                          <Link
-                            to="/history"
-                            key={title}
-                            className="flex items-center gap-3 rounded-xl py-2.5 transition-colors hover:bg-[#faf8f6]"
-                          >
-                            <span
-                              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                              style={{ color: fg, backgroundColor: bg }}
-                            >
-                              <Icon size={15} />
-                            </span>
-                            <span className="min-w-0 flex-1">
-                              <span className="block text-[13px] font-semibold">{title}</span>
-                              <span className="mt-0.5 block truncate text-[11px] text-[#8a817b]">{detail}</span>
-                            </span>
-                            <span className={`shrink-0 text-[13px] font-semibold ${positive ? "text-[#0f9d63]" : ""}`}>
-                              {amount}
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
-                    </section>
-
-                    {/* Spending */}
-                    <section className={`${card} p-5 md:p-4`}>
-                      <div className="flex items-center justify-between">
-                        <h2 className="text-[16px] md:text-[15px] font-bold">Spending</h2>
-                        <span className="text-[11.5px] text-[#8a817b]">This month</span>
-                      </div>
-                      <p className="mt-3 text-[24px] md:text-[22px] font-extrabold tracking-tight">₦{totalSpending.toLocaleString()}</p>
-
-                      <div className="mt-3 flex h-2 gap-1" role="img" aria-label="Spending breakdown by category">
-                        {spendingData.map((d) => (
-                          <span
-                            key={d.category}
-                            className="h-full rounded-full"
-                            style={{ flexGrow: d.amount, backgroundColor: d.color }}
-                          />
-                        ))}
-                      </div>
-
-                      <ul className="mt-4 space-y-3">
-                        {spendingData.map((d) => (
-                          <li key={d.category} className="flex items-center gap-2.5 text-[12.5px]">
-                            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                            <span className="flex-1 font-medium">{d.category}</span>
-                            <span className="font-semibold">₦{d.amount.toLocaleString()}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                  </div>
+                  <ul className="mt-4 space-y-3">
+                    {spendingData.map((d) => (
+                      <li key={d.category} className="flex items-center gap-2.5 text-[12.5px]">
+                        <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
+                        <span className="flex-1 font-light">{d.category}</span>
+                        <span className="font-semibold">₦{d.amount.toLocaleString()}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section> */}
               </div>
             </div>
-        )}
           </div>
-
-        {/* ===== Mobile Bottom Navigation Bar ===== */}
-        <nav
-          aria-label="Quick mobile navigation"
-          className="fixed bottom-0 left-0 right-0 z-30 flex h-16 items-center justify-around border-t border-[#e8e3dc] bg-white/95 px-2 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.06)] min-md:hidden"
-        >
-          <button
-            type="button"
-            onClick={goHome}
-            className={`flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium transition-colors ${activeView === "home" ? "text-[#f26a10]" : "text-[#8a817b]"
-              }`}
-          >
-            <FiHome size={18} />
-            <span>Home</span>
-          </button>
-
-          <Link
-            to="/payment/airtime_recharge"
-            state={{ fromDashboard: true, returnTo: "/dashboard-v2" }}
-            onClick={() => {
-              sessionStorage.setItem("fromDashboard", "true");
-              sessionStorage.setItem("returnTo", "/dashboard-v2");
-            }}
-            className="flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium text-[#8a817b] hover:text-[#f26a10] transition-colors"
-          >
-            <FiGrid size={18} />
-            <span>VAS</span>
-          </Link>
-
-          <button
-            type="button"
-            onClick={openMall}
-            className={`relative flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium transition-colors ${activeView === "mall" ? "text-[#f26a10]" : "text-[#8a817b]"
-              }`}
-          >
-            <FiShoppingBag size={18} />
-            <span className="relative">
-              Mall
-              <span className="absolute -right-2 -top-1 h-1.5 w-1.5 rounded-full bg-[#f26a10]" />
-            </span>
-          </button>
-
-          <Link
-            to="/transfers"
-            className="flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium text-[#8a817b] hover:text-[#f26a10] transition-colors"
-          >
-            <FiSend size={18} />
-            <span>Send</span>
-          </Link>
-
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(true)}
-            className="flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium text-[#8a817b] hover:text-[#f26a10] transition-colors"
-          >
-            <FiMenu size={18} />
-            <span>More</span>
-          </button>
-        </nav>
+        )}
       </div>
-      );
+
+      {/* ===== Mobile Bottom Navigation Bar ===== */}
+      <nav
+        aria-label="Quick mobile navigation"
+        className="fixed bottom-0 left-0 right-0 z-30 flex h-16 items-center justify-around border-t border-[#e8e3dc] bg-white/95 px-2 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.06)] min-md:hidden"
+      >
+        <button
+          type="button"
+          onClick={goHome}
+          className={`flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium transition-colors ${activeView === "home" ? "text-[#f26a10]" : "text-[#8a817b]"
+            }`}
+        >
+          <FiHome size={18} />
+          <span>Home</span>
+        </button>
+
+        <Link
+          to="/payment/airtime_recharge"
+          state={{ fromDashboard: true, returnTo: "/dashboard-v2" }}
+          onClick={() => {
+            sessionStorage.setItem("fromDashboard", "true");
+            sessionStorage.setItem("returnTo", "/dashboard-v2");
+          }}
+          className="flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium text-[#8a817b] hover:text-[#f26a10] transition-colors"
+        >
+          <FiGrid size={18} />
+          <span>VAS</span>
+        </Link>
+
+        <button
+          type="button"
+          onClick={openMall}
+          className={`relative flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium transition-colors ${activeView === "mall" ? "text-[#f26a10]" : "text-[#8a817b]"
+            }`}
+        >
+          <FiShoppingBag size={18} />
+          <span className="relative">
+            Mall
+            <span className="absolute -right-2 -top-1 h-1.5 w-1.5 rounded-full bg-[#f26a10]" />
+          </span>
+        </button>
+
+        <Link
+          to="/transfers"
+          className="flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium text-[#8a817b] hover:text-[#f26a10] transition-colors"
+        >
+          <FiSend size={18} />
+          <span>Send</span>
+        </Link>
+
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen(true)}
+          className="flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium text-[#8a817b] hover:text-[#f26a10] transition-colors"
+        >
+          <FiMenu size={18} />
+          <span>More</span>
+        </button>
+      </nav>
+    </div>
+  );
 }

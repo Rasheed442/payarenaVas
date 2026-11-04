@@ -54,6 +54,8 @@ import NewLogin from "./pages/NewLogin";
 import DashboardV2 from "./pages/DashboardV2";
 import HomePage from "./pages/DashboardPages/Home";
 import AuthReceiver from "./pages/AuthReceiver";
+import WalletPage from "./pages/WalletPage";
+import ProfilePage from "./pages/DashboardPages/Profile";
 
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -214,6 +216,14 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard-v2",
         element: <DashboardV2 />,
+      },
+      {
+        path: "/wallet",
+        element: <WalletPage />,
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />,
       },
 
       {

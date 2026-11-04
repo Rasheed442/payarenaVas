@@ -114,7 +114,7 @@ const sideLinksBase = [
     to: "/payment/airtime_recharge",
     external: false,
   },
-  { label: "Wallet", icon: FiCreditCard, to: "" },
+  { label: "Wallet", icon: FiCreditCard, to: "/wallet" },
   { label: "Profile", icon: FiUser, to: "" },
 ];
 

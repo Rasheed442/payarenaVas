@@ -56,6 +56,7 @@ import HomePage from "./pages/DashboardPages/Home";
 import AuthReceiver from "./pages/AuthReceiver";
 import WalletPage from "./pages/WalletPage";
 import ProfilePage from "./pages/DashboardPages/Profile";
+import SettingsV2Page from "./pages/DashboardPages/SettingsV2";
 
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -224,6 +225,10 @@ export const router = createBrowserRouter([
       {
         path: "/profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "/settings-v2",
+        element: <SettingsV2Page />,
       },
 
       {

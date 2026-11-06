@@ -73,9 +73,10 @@ export default function ProfilePage() {
   const sideLinks = [
     { label: "Home", icon: FiHome, type: "route", to: "/dashboard-v2" },
     { label: "VAS", icon: FiGrid, type: "route", to: "/payment/airtime_recharge" },
-    { label: "Mall", icon: FiShoppingBag, type: "route", to: "/dashboard-v2", isNew: true },
+    { label: "Mall", icon: FiShoppingBag, type: "external", to: "https://mall.payarena.com", isNew: true },
     { label: "Wallet", icon: FiCreditCard, type: "route", to: "/wallet" },
     { label: "Profile", icon: FiUser, type: "route", to: "/profile", active: true },
+    { label: "Settings", icon: FiShield, type: "route", to: "/settings-v2" },
   ];
 
   const renderNavItem = ({ label, icon: Icon, type, to, active, isNew }) => {
@@ -370,7 +371,7 @@ export default function ProfilePage() {
           {/* Personal Information Card */}
           <section className={`${card} p-6 md:p-5`}>
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-[16px] font-semibold">Personal Information</h3>
+              <h3 className="text-[18px] font-light">Personal Information</h3>
               {!editMode && (
                 <button
                   type="button"
@@ -594,13 +595,15 @@ export default function ProfilePage() {
           <span>VAS</span>
         </Link>
 
-        <Link
-          to="/dashboard-v2"
+        <a
+          href="https://mall.payarena.com"
+          target="_blank"
+          rel="noopener noreferrer"
           className="flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium text-[#8a817b] hover:text-[#f26a10] transition-colors"
         >
           <FiShoppingBag size={18} />
           <span>Mall</span>
-        </Link>
+        </a>
 
         <Link
           to="/transfers"

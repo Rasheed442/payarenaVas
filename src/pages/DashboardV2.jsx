@@ -1,5 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import http from "../helpers/http";
+import { getGraphData } from "../store/services/Wallet";
+import { getDashboardData } from "../store/services/transactions";
 import {
   FiArrowDownLeft,
   FiArrowLeft,
@@ -7,7 +11,6 @@ import {
   FiBell,
   FiClock,
   FiCreditCard,
-  FiExternalLink,
   FiEye,
   FiEyeOff,
   FiFileText,
@@ -46,11 +49,7 @@ const quickActions = [
   // { label: "More", icon: FiMoreHorizontal, fg: "#9a948f", bg: "#f2f0ee", href: "/payments", muted: true },
 ];
 
-const recentTransactions = [
-  { title: "Airtime purchase", detail: "MTN · 10:24 AM", amount: "−₦0", icon: FiSmartphone, fg: "#1a1210", bg: "#f2f0ee", positive: false },
-  { title: "Money received", detail: "John Ade · 09:15 AM", amount: "+₦0", icon: FiArrowDownLeft, fg: "#10a36b", bg: "#e6f8f0", positive: true },
-  { title: "Electricity", detail: "Ikeja Electric · 08:45 AM", amount: "−₦0", icon: FiZap, fg: "#f59e0b", bg: "#fff8e1", positive: false },
-];
+
 
 // Replace `avatar` with each contact's real photo when available
 const sendAgainContacts = [
@@ -59,11 +58,54 @@ const sendAgainContacts = [
   { name: "Tunde", avatar: defaultProfile },
 ];
 
-const spendingData = [
-  { category: "Airtime & data", amount: 0, color: "#f26a10" },
-  { category: "Utilities", amount: 0, color: "#fbbf24" },
-  { category: "Transfers", amount: 0, color: "#1a1210" },
-];
+// Helper to transform API transaction data to UI format
+const formatTransaction = (trx) => {
+  const description = trx.Description || "";
+  const amount = parseFloat(trx.Amount?.replace(/,/g, '')) || 0;
+  const status = trx.Status || "";
+
+  // Determine if transaction is credit or debit based on status or description
+  const isCredit = status === "CREDIT" || description.toLowerCase().includes("received") || description.toLowerCase().includes("credit");
+
+  // Map transaction types to icons and colors based on description
+  const typeConfig = {
+    dstv: { icon: FiFileText, fg: "#7c4dff", bg: "#f1ecff" },
+    airtime: { icon: FiSmartphone, fg: "#1a1210", bg: "#f2f0ee" },
+    data: { icon: FiWifi, fg: "#1b9ad6", bg: "#e8f5fd" },
+    electricity: { icon: FiZap, fg: "#f59e0b", bg: "#fff8e1" },
+    transfer: { icon: FiSend, fg: "#10a36b", bg: "#e6f8f0" },
+    credit: { icon: FiArrowDownLeft, fg: "#10a36b", bg: "#e6f8f0" },
+    default: { icon: FiFileText, fg: "#7c4dff", bg: "#f1ecff" },
+  };
+
+  const descLower = description.toLowerCase();
+  let config = typeConfig.default;
+
+  if (descLower.includes("dstv") || descLower.includes("gotv")) config = typeConfig.dstv;
+  else if (descLower.includes("airtime")) config = typeConfig.airtime;
+  else if (descLower.includes("data")) config = typeConfig.data;
+  else if (descLower.includes("electricity") || descLower.includes("ekedc") || descLower.includes("ikedc")) config = typeConfig.electricity;
+  else if (descLower.includes("transfer")) config = typeConfig.transfer;
+  else if (isCredit) config = typeConfig.credit;
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    // Format is "11/4/2026 3:45 PM"
+    return dateStr;
+  };
+
+  return {
+    title: description,
+    detail: `${trx.Merchant?.name || "Payarena"} · ${formatDate(trx.Date)}`,
+    amount: isCredit ? `+₦${amount.toLocaleString()}` : `−₦${amount.toLocaleString()}`,
+    icon: config.icon,
+    fg: config.fg,
+    bg: config.bg,
+    positive: isCredit,
+  };
+};
+
+
 
 /* ---------- Helpers ---------- */
 
@@ -99,7 +141,7 @@ function getGreeting() {
   return "Good evening";
 }
 
-const card = "rounded-2xl bg-white shadow-[0_1px_2px_rgba(26,18,16,0.04),0_6px_18px_rgba(26,18,16,0.04)]";
+const card = "rounded-2xl h-full bg-white shadow-[0_1px_2px_rgba(26,18,16,0.04),0_6px_18px_rgba(26,18,16,0.04)]";
 const chip = "bg-white shadow-[0_1px_2px_rgba(26,18,16,0.04)]";
 
 /* ---------- Component ---------- */
@@ -107,7 +149,7 @@ const chip = "bg-white shadow-[0_1px_2px_rgba(26,18,16,0.04)]";
 export default function DashboardV2() {
   const navigate = useNavigate();
   const user = useMemo(() => getUserDetails(), []);
-  const firstName = user.FirstName?.trim()?.split(/\s+/)[0] || "David";
+  const firstName = user.FirstName?.toUpperCase()?.trim()?.split(/\s+/)[0] || "David";
   const lastName = user.LastName?.trim()?.split(/\s+/)[0] || "Adeleke";
   const fullName = `${firstName} ${lastName}`;
   const profilePhoto = user.ProfilePhoto || defaultProfile;
@@ -117,10 +159,19 @@ export default function DashboardV2() {
   const [mallUrl, setMallUrl] = useState("");
   const [mallLoading, setMallLoading] = useState(true);
   const [mallKey, setMallKey] = useState(0); // bump to reload the iframe
+  const iframeRef = useRef(null);
 
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [search, setSearch] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Dashboard data states
+  const [balance, setBalance] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [graphData, setGraphData] = useState(null);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const openMall = () => {
     // Build the URL at open time so the latest token is always used
@@ -142,17 +193,174 @@ export default function DashboardV2() {
     setMallKey((k) => k + 1);
   };
 
+  // Handle postMessage from Mall iframe
+  useEffect(() => {
+    const handleMessage = (event) => {
+      // Ignore React DevTools messages
+      if (event.data?.source === 'react-devtools-content-script') {
+        return;
+      }
+
+      const allowedOrigins = [
+        'https://test.mall.payarena.com',
+        'https://mall.payarena.com',
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'http://localhost:4200',
+      ];
+
+      const incomingOrigin = (() => {
+        try {
+          return new URL(event.origin).origin;
+        } catch {
+          return event.origin.trim().replace(/\/+$/, '');
+        }
+      })();
+
+      if (!allowedOrigins.includes(incomingOrigin)) {
+        console.warn('Message ignored due to origin mismatch:', incomingOrigin);
+        return;
+      }
+
+      const { type, data } = event.data || {};
+
+      if (type === 'UPDATE_LOCAL_STORAGE' && data && typeof data === 'object') {
+        const ALLOWED_UPDATE_KEYS = new Set([
+          'mall-token',
+          'mallUserInfo',
+          'token',
+          'refreshToken',
+          'ionic',
+        ]);
+
+        Object.entries(data).forEach(([key, value]) => {
+          if (!ALLOWED_UPDATE_KEYS.has(key)) return;
+          if (value) {
+            const strVal = typeof value === 'object' ? JSON.stringify(value) : value;
+            localStorage.setItem(key, strVal);
+          } else {
+            localStorage.removeItem(key);
+          }
+        });
+        console.log('Updated storage from Mall:', data);
+      } else if (type === 'IFRAME_READY') {
+        console.log('Mall iframe ready, sending localStorage');
+        sendLocalStorageToIframe(event.source, event.origin);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  const sendLocalStorageToIframe = (targetWindow, targetOrigin) => {
+    if (targetWindow) {
+      const data = {
+        'mall-token': localStorage.getItem('mall-token') || localStorage.getItem('token'),
+        'mallUserInfo': localStorage.getItem('mallUserInfo'),
+      };
+
+      if (!data['mall-token'] && !data['mallUserInfo']) {
+        console.info('Mall data not ready');
+        return;
+      }
+
+      console.log('Sending SYNC_LOCAL_STORAGE to Mall:', targetOrigin, {
+        hasMallToken: Boolean(data['mall-token']),
+        hasMallUserInfo: Boolean(data['mallUserInfo']),
+      });
+
+      targetWindow.postMessage(
+        {
+          type: 'SYNC_LOCAL_STORAGE',
+          data: {
+            ...data,
+            ionic: true,
+          },
+        },
+        targetOrigin,
+      );
+    }
+  };
+
+  const onIframeLoad = () => {
+    setMallLoading(false);
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      const targetOrigin = new URL(mallUrl || getMallAuthLink()).origin;
+      setTimeout(() => {
+        sendLocalStorageToIframe(iframeRef.current.contentWindow, targetOrigin);
+      }, 1000);
+    }
+  };
+
+  // Fetch dashboard data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch balance from /wallet/balance
+        const balanceRes = await http().get("/wallet/balance");
+        setBalance(balanceRes.data);
+
+        // Fetch transactions from /transaction/list
+        const transactionsRes = await http().get("/transaction/list");
+        // Handle different response structures
+        const transactionsData = transactionsRes.data?.data || transactionsRes.data || [];
+        setTransactions(Array.isArray(transactionsData) ? transactionsData : []);
+
+        // Fetch graph data
+        const graphRes = await getGraphData();
+        setGraphData(graphRes);
+
+        // Fetch dashboard data
+        const dashboardRes = await getDashboardData();
+        setDashboardData(dashboardRes);
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+        setError(err.message || "Failed to load dashboard data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
   const sideLinks = [
     { label: "Home", icon: FiHome, type: "view", onClick: goHome, active: activeView === "home" },
     { label: "VAS", icon: FiGrid, type: "route", to: "/payment/airtime_recharge" },
-    { label: "Mall", icon: FiShoppingBag, type: "view", onClick: openMall, active: activeView === "mall", isNew: true },
+    { label: "Mall", icon: FiShoppingBag, type: "external", to: getMallAuthLink(), isNew: true },
     { label: "Wallet", icon: FiCreditCard, type: "route", to: "/wallet" },
     { label: "Profile", icon: FiUser, type: "route", to: "/profile" },
+    { label: "Settings", icon: FiShield, type: "route", to: "/settings-v2" },
   ];
 
-  const filteredTransactions = recentTransactions.filter((t) =>
-    `${t.title} ${t.detail}`.toLowerCase().includes(search.trim().toLowerCase())
-  );
+  const filteredTransactions = (Array.isArray(transactions) ? transactions : [])
+    .slice(0, 10)
+    .map(formatTransaction)
+    .filter((t) =>
+      `${t.title} ${t.detail}`.toLowerCase().includes(search.trim().toLowerCase())
+    );
+
+  // Derive spending data from graphData
+  const spendingData = useMemo(() => {
+    if (!graphData || !graphData.Data) {
+      return [
+        { category: "Airtime & data", amount: 0, color: "#f26a10" },
+        { category: "Utilities", amount: 0, color: "#fbbf24" },
+        { category: "Transfers", amount: 0, color: "#1a1210" },
+      ];
+    }
+
+    const data = graphData.Data;
+    return [
+      { category: "Airtime & data", amount: data.airtimeData || 0, color: "#f26a10" },
+      { category: "Utilities", amount: data.utilities || 0, color: "#fbbf24" },
+      { category: "Transfers", amount: data.transfers || 0, color: "#1a1210" },
+    ];
+  }, [graphData]);
 
   const totalSpending = spendingData.reduce((sum, d) => sum + d.amount, 0);
 
@@ -182,7 +390,6 @@ export default function DashboardV2() {
       </>
     );
 
-    // In-dashboard views (Home / Mall): swap the main content, no navigation
     if (type === "view") {
       return (
         <button
@@ -362,7 +569,7 @@ export default function DashboardV2() {
               >
                 <FiMenu size={18} />
               </button>
-              <Link to="/dashboard-v2" onClick={goHome} aria-label="Payarena home">
+              <Link to="/dashboard-v2" aria-label="Payarena home">
                 <img src={payarenaLogo} alt="Payarena" className="h-7 w-auto object-contain" />
               </Link>
             </div>
@@ -452,7 +659,7 @@ export default function DashboardV2() {
                   rel="noopener noreferrer"
                   className="flex h-8 items-center gap-1.5 rounded-lg bg-[#f2f0ee] px-3 md:px-2.5 text-[12px] font-semibold hover:bg-[#e9e5e0]"
                 >
-                  <FiExternalLink size={13} /> <span className="md:hidden">Open in new tab</span>
+                  Open in new tab
                 </a>
               </div>
             </div>
@@ -467,12 +674,13 @@ export default function DashboardV2() {
               )}
               <iframe
                 key={mallKey}
+                ref={iframeRef}
                 src={mallUrl}
                 title="Payarena Mall"
                 className="h-full w-full border-0"
-                allow="payment; clipboard-write; geolocation"
-                sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms allow-top-navigation-by-user-activation"
-                onLoad={() => setMallLoading(false)}
+                allow="payment; clipboard-write; geolocation; camera; microphone"
+                referrerPolicy="no-referrer"
+                onLoad={onIframeLoad}
               />
             </div>
           </section>
@@ -487,13 +695,16 @@ export default function DashboardV2() {
                 <p className="flex items-center gap-1.5 text-[13px] md:text-[12.5px] text-[#8a817b]">
                   {getGreeting()} <FiSun size={13} className="text-[#f26a10]" />
                 </p>
-                <h1 className="mt-0.5 text-[26px] md:text-[22px] font-medium leading-tight tracking-tight">
-                  Welcome back, {firstName}
+                <h1 className="mt-0.5 text-[26px] md:text-[22px] font-medium capitalise leading-tight tracking-tight">
+                  Welcome Back, {firstName}
                 </h1>
+                {error && (
+                  <p className="mt-2 text-[12px] text-red-600">Failed to load dashboard data. Please refresh.</p>
+                )}
               </div>
               <div className={`flex items-center gap-2 rounded-full px-4 py-2 md:px-3.5 md:py-1.5 text-[11.5px] md:text-[11px] font-light ${chip}`}>
                 <FiShield size={12} className="text-[#f26a10]" />
-                Daily limit ₦0 · 0% used
+                Account: {balance?.accountNumber || "N/A"}
               </div>
             </div>
 
@@ -503,6 +714,11 @@ export default function DashboardV2() {
               <div className="flex min-w-0 flex-col gap-4 min-md:h-full min-md:overflow-y-auto min-md:pr-2 min-md:pb-4 [scrollbar-width:thin] min-md:[&::-webkit-scrollbar]:w-1.5 min-md:[&::-webkit-scrollbar-thumb]:rounded-full min-md:[&::-webkit-scrollbar-thumb]:bg-[#1a1210]/15 min-md:hover:[&::-webkit-scrollbar-thumb]:bg-[#1a1210]/25">
                 {/* Wallet card */}
             <section className="relative shrink-0 overflow-hidden rounded-3xl bg-gradient-to-br from-[#ff7a22] via-[#f56a10] to-[#e04e05] p-5 text-white shadow-[0_12px_30px_rgba(240,100,20,0.22)] md:p-6">
+  {loading && (
+    <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#f56a10]/80">
+      <span className="h-8 w-8 animate-spin rounded-full border-[3px] border-white/30 border-t-white" />
+    </div>
+  )}
   <span className="pointer-events-none absolute -right-8 -top-20 h-56 w-56 rounded-full bg-white/10" />
   <span className="pointer-events-none absolute -bottom-32 left-[55%] h-64 w-64 rounded-full bg-white/10" />
 
@@ -520,19 +736,20 @@ export default function DashboardV2() {
         {balanceVisible ? <FiEye size={12} /> : <FiEyeOff size={12} />}
       </button>
 
-      <p className="mt-3 text-[30px] font-extrabold leading-none tracking-tight lg:text-[34px]">
+      <p className="my-6 text-[44px] sm:[30px] font-extrabold leading-none tracking-tight lg:text-[34px]">
         {balanceVisible ? (
           <>
-            ₦0<span className="text-[18px] font-bold text-white/60 lg:text-[20px]">.00</span>
+            ₦{parseFloat(balance?.currentBalance || 0).toLocaleString()}
+            <span className="text-[18px] font-bold text-white/60 lg:text-[20px]">.00</span>
           </>
         ) : (
           "₦••••••••"
         )}
       </p>
 
-      <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-[11px] font-medium">
+      <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-[11px] font-light">
         <FiTrendingUp size={12} />
-        +₦0 this week
+        +₦{graphData?.weeklyGrowth || 0} This week
       </span>
     </div>
 
@@ -563,12 +780,14 @@ export default function DashboardV2() {
           <div className="min-w-0">
             <p className="text-[9px] uppercase tracking-wider text-white/40">Card holder</p>
             <p className="mt-0.5 truncate text-[12px] font-semibold text-white/80 xl:text-[13px]">
-              {fullName}
+              {balance?.accountName || fullName}
             </p>
           </div>
           <div className="shrink-0 text-right">
-            <p className="text-[9px] uppercase tracking-wider text-white/40">Expires</p>
-            <p className="mt-0.5 text-[12px] font-semibold text-white/80 xl:text-[13px]">09/28</p>
+            <p className="text-[9px] uppercase tracking-wider text-white/40">Account</p>
+            <p className="mt-0.5 text-[12px] font-semibold text-white/80 xl:text-[13px]">
+              {balance?.accountNumber || "•••• •••• •••• 8888"}
+            </p>
           </div>
         </div>
       </div>
@@ -638,11 +857,12 @@ export default function DashboardV2() {
 
                 {/* Promo cards */}
                 <div className="grid gap-3 grid-cols-2 md:grid-cols-1">
-                  {/* Payarena Mall promo: opens the embedded Mall view */}
-                  <button
-                    type="button"
-                    onClick={openMall}
-                    className="relative flex min-h-[150px] flex-col justify-between overflow-hidden rounded-2xl bg-[#1a1210] p-5 text-left text-white"
+                  {/* Payarena Mall promo: opens mall in new tab */}
+                  <a
+                    href={getMallAuthLink()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative flex min-h-[150px] flex-col justify-between overflow-hidden rounded-2xl bg-[#1a1210] p-5 text-left text-white hover:opacity-90 transition-opacity"
                   >
                     <FiShoppingBag
                       size={96}
@@ -660,7 +880,7 @@ export default function DashboardV2() {
                         Shop now <FiArrowRight size={12} />
                       </p>
                     </div>
-                  </button>
+                  </a>
 
                   <Link
                     to="/payment/airtime_recharge"
@@ -694,7 +914,7 @@ export default function DashboardV2() {
               {/* Right column (fixed on desktop) */}
               <div className="flex min-w-0 flex-col gap-4 min-md:h-full min-md:overflow-y-auto min-md:pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {/* Send again */}
-                <section className={`${card} p-5 md:p-4`}>
+                {/* <section className={`${card} p-5 md:p-4`}>
                   <div className="flex items-center justify-between">
                     <h2 className="text-[16px] md:text-[15px] font-light">Send again</h2>
                     <Link to="#" className="text-[12px] font-semibold text-[#e04e05] hover:underline">
@@ -715,7 +935,7 @@ export default function DashboardV2() {
                       </Link>
                     ))}
                   </div>
-                </section>
+                </section> */}
 
                 {/* Recent activity */}
                 <section className={`${card} p-5 md:p-4`}>
@@ -726,30 +946,38 @@ export default function DashboardV2() {
                     </Link>
                   </div>
                   <div className="mt-3 space-y-0.5">
-                    {filteredTransactions.length === 0 && (
-                      <p className="py-5 text-center text-[12px] text-[#8a817b]">No matching activity</p>
-                    )}
-                    {filteredTransactions.map(({ title, detail, amount, icon: Icon, fg, bg, positive }) => (
-                      <Link
-                        to="#"
-                        key={title}
-                        className="flex items-center gap-3 rounded-xl py-2.5 transition-colors hover:bg-[#faf8f6]"
-                      >
-                        <span
-                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                          style={{ color: fg, backgroundColor: bg }}
+                    {loading ? (
+                      <div className="py-5 flex justify-center">
+                        <span className="h-12 w-12 animate-spin rounded-full border-[2px] border-[#f2f0ee] border-t-[#f26a10]" />
+                      </div>
+                    ) : filteredTransactions.length === 0 ? (
+                      <div className="py-16 flex flex-col items-center justify-center gap-2">
+                        <FiFileText size={42} className="text-[#d4cfc8]" />
+                        <p className="text-center text-[12px] text-[#8a817b]">No matching activity</p>
+                      </div>
+                    ) : (
+                      filteredTransactions.map(({ title, detail, amount, icon: Icon, fg, bg, positive }) => (
+                        <Link
+                          to="#"
+                          key={title}
+                          className="flex items-center gap-3 rounded-xl py-2.5 transition-colors hover:bg-[#faf8f6]"
                         >
-                          <Icon size={15} />
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block text-[13px] font-semibold">{title}</span>
-                          <span className="mt-0.5 block truncate text-[11px] text-[#8a817b]">{detail}</span>
-                        </span>
-                        <span className={`shrink-0 text-[13px] font-semibold ${positive ? "text-[#0f9d63]" : ""}`}>
-                          {amount}
-                        </span>
-                      </Link>
-                    ))}
+                          <span
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                            style={{ color: fg, backgroundColor: bg }}
+                          >
+                            <Icon size={15} />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-[13px] font-semibold">{title}</span>
+                            <span className="mt-0.5 block truncate text-[11px] text-[#8a817b]">{detail}</span>
+                          </span>
+                          <span className={`shrink-0 text-[13px] font-semibold ${positive ? "text-[#0f9d63]" : ""}`}>
+                            {amount}
+                          </span>
+                        </Link>
+                      ))
+                    )}
                   </div>
                 </section>
 
@@ -792,15 +1020,13 @@ export default function DashboardV2() {
         aria-label="Quick mobile navigation"
         className="fixed bottom-0 left-0 right-0 z-30 flex h-16 items-center justify-around border-t border-[#e8e3dc] bg-white/95 px-2 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.06)] min-md:hidden"
       >
-        <button
-          type="button"
-          onClick={goHome}
-          className={`flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium transition-colors ${activeView === "home" ? "text-[#f26a10]" : "text-[#8a817b]"
-            }`}
+        <Link
+          to="/dashboard-v2"
+          className="flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium text-[#f26a10] transition-colors"
         >
           <FiHome size={18} />
           <span>Home</span>
-        </button>
+        </Link>
 
         <Link
           to="/payment/airtime_recharge"
@@ -815,18 +1041,18 @@ export default function DashboardV2() {
           <span>VAS</span>
         </Link>
 
-        <button
-          type="button"
-          onClick={openMall}
-          className={`relative flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium transition-colors ${activeView === "mall" ? "text-[#f26a10]" : "text-[#8a817b]"
-            }`}
+        <a
+          href={getMallAuthLink()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="relative flex flex-col items-center gap-1 py-1 px-3 text-[10.5px] font-medium text-[#8a817b] hover:text-[#f26a10] transition-colors"
         >
           <FiShoppingBag size={18} />
           <span className="relative">
             Mall
             <span className="absolute -right-2 -top-1 h-1.5 w-1.5 rounded-full bg-[#f26a10]" />
           </span>
-        </button>
+        </a>
 
         <Link
           to="/transfers"

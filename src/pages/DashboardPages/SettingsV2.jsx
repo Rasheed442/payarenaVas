@@ -19,6 +19,7 @@ import {
 } from "react-icons/fi";
 import payarenaLogo from "../../assets/images/logo.svg";
 import defaultProfile from "../../assets/images/profilePicture.png";
+import CookieConsent from "../../components/CookieConsent";
 
 /* ---------- Helpers ---------- */
 
@@ -521,6 +522,7 @@ export default function SettingsV2Page() {
           </div>
         </div>
       )}
+      <CookieConsent />
     </div>
   );
 }

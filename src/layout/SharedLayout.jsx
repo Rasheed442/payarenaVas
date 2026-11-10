@@ -2,6 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import CookieConsent from "../components/CookieConsent";
 import { useLocation } from "react-router-dom";
 import Navbar2 from "../components/Navbar2";
 import Suscribe from "../components/Suscribe";
@@ -26,6 +27,7 @@ const SharedLayout = () => {
         </div>
       )}
       <Footer />
+      <CookieConsent />
     </main>
   );
 };

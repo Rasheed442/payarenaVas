@@ -13,6 +13,7 @@ import {
 import { getCatalog } from "../store/api/catalog/getCatalog";
 import Loader from "../components/Loader";
 import { countryContext } from "../context/CountryProvider";
+import CookieConsent from "../components/CookieConsent";
 
 const PaymentLayout = () => {
   const [selectedNetwork, setSelectedNetwork] = useState("mtn");
@@ -67,6 +68,7 @@ const PaymentLayout = () => {
           </div>
         </div>
       )}
+      <CookieConsent />
     </div>
   );
 };

@@ -181,10 +181,16 @@ const Footer = () => {
         </div>
         <DownloadComponent />
       </div>
-      <div className="mt-[2.6rem] border-t border-[#667085] py-4 flex items-center justify-between w-full max-w-[1440px] mx-auto">
-        <div>
-          <p className="text-white text-[.77vw] font-generalsans-extralight sm:text-[.7rem]">
+      <div className="mt-[2.6rem] border-t border-[#667085] py-4 flex flex-col items-center justify-between w-full max-w-[1440px] mx-auto gap-4">
+        <div className="text-center">
+          <p className="text-white text-[18px] font-generalsans-extralight sm:text-[.7rem]">
             © 2023 Payarena. All rights reserved.
+          </p>
+          <p className="text-white text-[16px] font-generalsans-extralight sm:text-[.65rem] mt-2">
+            Payarena Solutions & Services BN2252394
+          </p>
+          <p className="text-white text-[16px] font-generalsans-extralight sm:text-[.65rem] mt-1">
+            A product of Unified Payments Services Ltd RC (318923)
           </p>
         </div>
       <div className="flex items-center gap-4">

@@ -19,6 +19,7 @@ import {
   FiX,
 } from "react-icons/fi";
 import payarenaLogo from "../assets/images/logo.svg";
+import CookieConsent from "../components/CookieConsent";
 
 function getUserDetails() {
   try {
@@ -915,6 +916,7 @@ export default function WalletPage() {
           </div>
         )}
       </main>
+      <CookieConsent />
     </div>
   );
 }

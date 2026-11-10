@@ -4,6 +4,7 @@ import axios from "axios";
 import http from "../helpers/http";
 import { getGraphData } from "../store/services/Wallet";
 import { getDashboardData } from "../store/services/transactions";
+import CookieConsent from "../components/CookieConsent";
 import {
   FiArrowDownLeft,
   FiArrowLeft,
@@ -1071,6 +1072,7 @@ export default function DashboardV2() {
           <span>More</span>
         </button>
       </nav>
+      <CookieConsent />
     </div>
   );
 }

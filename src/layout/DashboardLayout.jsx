@@ -4,6 +4,7 @@ import DashboardTopBar from "../components/DashboardTopBar";
 import DashboardSideBar from "../components/DashboardSideBar";
 import Dots from "../assets/icons/dashboardIIcons/Dots";
 import NotificationPanel from "../components/NotificationPanel";
+import CookieConsent from "../components/CookieConsent";
 
 const DashboardLayout = () => {
   return (
@@ -17,6 +18,7 @@ const DashboardLayout = () => {
           <Outlet />
         </div>
       </div>
+      <CookieConsent />
     </div>
   );
 };

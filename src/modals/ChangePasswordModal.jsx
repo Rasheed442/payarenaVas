@@ -180,7 +180,7 @@ export default function ChangePasswordModal({ modal, closeModal }) {
             <div className="text-sm text-gray mt-2 flex flex-col gap-2">
               <p>Your password must contain the following:</p>
               <ul className="list-disc ml-5">
-                <li>At least 8 characters</li>
+                <li>At least 14 characters</li>
                 <li>Mix of upper and lowercase letters</li>
                 <li>Numbers and special characters</li>
               </ul>

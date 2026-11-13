@@ -62,9 +62,9 @@ export default function WalletPage() {
   const [txnDate, setTxnDate] = useState("22nd September 2026, 09:41 AM");
 
   // User details for "Wallet Details"
-  const firstName = user.FirstName?.trim()?.split(/\s+/)[0] || "David";
-  const lastName = user.LastName?.trim()?.split(/\s+/)[0] || "Obalola";
-  const walletName = `${firstName} ${lastName}`.trim() || "David Obalola";
+  const firstName = user.FirstName?.trim()?.split(/\s+/)[0] || "";
+  const lastName = user.LastName?.trim()?.split(/\s+/)[0] || "";
+  const walletName = `${firstName} ${lastName}`.trim() || "";
   const walletNumber =
     user.PhoneNumber || user.WalletNumber || user.AccountNumber || "1234567890";
   const bankName = "Hope Bank";
@@ -305,7 +305,7 @@ export default function WalletPage() {
                     maxLength={6}
                     value={pin}
                     onChange={handlePinChange}
-                    placeholder="••••••••••••"
+                    placeholder="•••••"
                     className="w-full rounded-2xl border border-[#d1d5db] px-4 py-3.5 text-[15px] tracking-[0.25em] text-[#111827] placeholder:text-[#9ca3af] placeholder:tracking-[0.2em] focus:border-[#f26a10] focus:outline-none focus:ring-2 focus:ring-[#f26a10]/20 transition-all font-mono"
                   />
                   <button
@@ -331,7 +331,7 @@ export default function WalletPage() {
                     maxLength={6}
                     value={confirmPin}
                     onChange={handleConfirmPinChange}
-                    placeholder="••••••••••••"
+                    placeholder="•••••"
                     className="w-full rounded-2xl border border-[#d1d5db] px-4 py-3.5 text-[15px] tracking-[0.25em] text-[#111827] placeholder:text-[#9ca3af] placeholder:tracking-[0.2em] focus:border-[#f26a10] focus:outline-none focus:ring-2 focus:ring-[#f26a10]/20 transition-all font-mono"
                   />
                   <button
@@ -406,7 +406,7 @@ export default function WalletPage() {
               <div className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-[#0ea5e9] text-[9px] font-bold leading-none">
                 i
               </div>
-              <span>This wwill only take a few seconds</span>
+              <span>This will only take a few seconds</span>
             </div>
           </div>
         )}
@@ -743,7 +743,7 @@ export default function WalletPage() {
             role="dialog"
             aria-modal="true"
           >
-            <div className="w-full max-w-[340px] rounded-3xl bg-white p-6 sm:p-7 shadow-2xl relative text-center">
+            <div className="w-full max-w-[450px] rounded-3xl bg-white p-6 sm:p-7 shadow-2xl relative text-center">
               {/* Close Button top-left */}
               <button
                 type="button"
@@ -763,7 +763,7 @@ export default function WalletPage() {
 
               {/* 4 OTP Digit Boxes */}
               <div className="mt-6 flex items-center justify-center gap-3">
-                {[0, 1, 2, 3].map((idx) => (
+                {[0, 1, 2, 3, 4, 5].map((idx) => (
                   <input
                     key={idx}
                     ref={pinInputRefs[idx]}

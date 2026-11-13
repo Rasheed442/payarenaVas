@@ -65,6 +65,8 @@ export default function NewLogin() {
       };
       localStorage.setItem("userDetails", JSON.stringify(profile));
       localStorage.setItem("mallUserInfo", JSON.stringify(profile)); // Also store as mallUserInfo for SSO
+      const kycVerified = result.kyc_verified === true;
+      localStorage.setItem("kycVerified", kycVerified ? "true" : "false");
       setProfileFirstName(profile.FirstName);
       setProfileLastName(profile.Surname);
       setProfilePic(profile.ProfilePhoto);
@@ -72,8 +74,13 @@ export default function NewLogin() {
       if (rememberMe) localStorage.setItem("rememberedEmail", email.trim());
       else localStorage.removeItem("rememberedEmail");
 
-      toast.success(result.message || "You’re signed in.");
-      navigate("/dashboard-v2");
+      if (kycVerified) {
+        toast.success(result.message || "You’re signed in.");
+        navigate("/dashboard-v2");
+      } else {
+        toast.info("Please complete your identity verification to continue.");
+        navigate("/kyc-verification");
+      }
     } catch (error) {
       const message = error instanceof TypeError
         ? "We couldn’t connect to Payarena. Check your internet connection and try again."

@@ -190,7 +190,7 @@ const Footer = () => {
             Payarena Solutions & Services BN2252394
           </p>
           <p className="text-white text-[16px] font-generalsans-extralight sm:text-[.65rem] mt-1">
-            A product of Unified Payments Services Ltd RC (318923)
+            A product of Unified Payments Services Ltd  ( RC 318923 )
           </p>
         </div>
       <div className="flex items-center gap-4">

@@ -175,7 +175,7 @@ export default function FundWalletModal({
               <div className="text-sm text-[#6A6A6A] min-md:text-right">
                 Bank Name
               </div>
-              <div className="text-lg">Hope Bank</div>
+              <div className="text-lg">"----"</div>
             </div>
           </div>
           <div className="p-6">

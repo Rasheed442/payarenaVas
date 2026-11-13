@@ -57,6 +57,7 @@ import AuthReceiver from "./pages/AuthReceiver";
 import WalletPage from "./pages/WalletPage";
 import ProfilePage from "./pages/DashboardPages/Profile";
 import SettingsV2Page from "./pages/DashboardPages/SettingsV2";
+import KycVerification from "./pages/KycVerification";
 
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -229,6 +230,10 @@ export const router = createBrowserRouter([
       {
         path: "/settings-v2",
         element: <SettingsV2Page />,
+      },
+      {
+        path: "/kyc-verification",
+        element: <KycVerification />,
       },
 
       {

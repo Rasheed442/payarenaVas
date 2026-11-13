@@ -66,7 +66,7 @@ const formatTransaction = (trx) => {
   const status = trx.Status || "";
 
   // Determine if transaction is credit or debit based on status or description
-  const isCredit = status === "CREDIT" || description.toLowerCase().includes("received") || description.toLowerCase().includes("credit");
+  const isCredit = status === "CREDIT" || status === "Credit" || description.toLowerCase().includes("received") || description.toLowerCase().includes("credit");
 
   // Map transaction types to icons and colors based on description
   const typeConfig = {
@@ -76,6 +76,7 @@ const formatTransaction = (trx) => {
     electricity: { icon: FiZap, fg: "#f59e0b", bg: "#fff8e1" },
     transfer: { icon: FiSend, fg: "#10a36b", bg: "#e6f8f0" },
     credit: { icon: FiArrowDownLeft, fg: "#10a36b", bg: "#e6f8f0" },
+    bulk: { icon: FiGrid, fg: "#8b5cf6", bg: "#f3e8ff" },
     default: { icon: FiFileText, fg: "#7c4dff", bg: "#f1ecff" },
   };
 
@@ -87,17 +88,18 @@ const formatTransaction = (trx) => {
   else if (descLower.includes("data")) config = typeConfig.data;
   else if (descLower.includes("electricity") || descLower.includes("ekedc") || descLower.includes("ikedc")) config = typeConfig.electricity;
   else if (descLower.includes("transfer")) config = typeConfig.transfer;
+  else if (descLower.includes("bulk")) config = typeConfig.bulk;
   else if (isCredit) config = typeConfig.credit;
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
-    // Format is "11/4/2026 3:45 PM"
+    // Format is "10/13/2026 2:33 PM"
     return dateStr;
   };
 
   return {
     title: description,
-    detail: `${trx.Merchant?.name || "Payarena"} · ${formatDate(trx.Date)}`,
+    detail: `${trx.Merchant?.Name || trx.Merchant?.name || "Payarena"} · ${formatDate(trx.Date)}`,
     amount: isCredit ? `+₦${amount.toLocaleString()}` : `−₦${amount.toLocaleString()}`,
     icon: config.icon,
     fg: config.fg,
@@ -142,7 +144,7 @@ function getGreeting() {
   return "Good evening";
 }
 
-const card = "rounded-2xl h-full bg-white shadow-[0_1px_2px_rgba(26,18,16,0.04),0_6px_18px_rgba(26,18,16,0.04)]";
+const card = "rounded-2xl h-full bg-white overflow-auto shadow-[0_1px_2px_rgba(26,18,16,0.04),0_6px_18px_rgba(26,18,16,0.04)]";
 const chip = "bg-white shadow-[0_1px_2px_rgba(26,18,16,0.04)]";
 
 /* ---------- Component ---------- */
@@ -151,7 +153,7 @@ export default function DashboardV2() {
   const navigate = useNavigate();
   const user = useMemo(() => getUserDetails(), []);
   const firstName = user.FirstName?.toUpperCase()?.trim()?.split(/\s+/)[0] || "David";
-  const lastName = user.LastName?.trim()?.split(/\s+/)[0] || "Adeleke";
+  const lastName = user.LastName?.trim()?.split(/\s+/)[0] || "";
   const fullName = `${firstName} ${lastName}`;
   const profilePhoto = user.ProfilePhoto || defaultProfile;
 
@@ -294,6 +296,14 @@ export default function DashboardV2() {
     }
   };
 
+  const thinScroll =
+  "[scrollbar-width:thin] [scrollbar-color:rgba(26,18,16,0.2)_transparent] " +
+  "[&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-transparent " +
+  "[&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#1a1210]/20 " +
+  "hover:[&::-webkit-scrollbar-thumb]:bg-[#f26a10]/50";
+
+const card = `rounded-2xl h-full bg-white overflow-auto ${thinScroll} shadow-[0_1px_2px_rgba(26,18,16,0.04),0_6px_18px_rgba(26,18,16,0.04)]`;
+
   // Fetch dashboard data
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -303,12 +313,12 @@ export default function DashboardV2() {
 
         // Fetch balance from /wallet/balance
         const balanceRes = await http().get("/wallet/balance");
-        setBalance(balanceRes.data);
+        setBalance(balanceRes.data?.Data || balanceRes.data);
 
         // Fetch transactions from /transaction/list
         const transactionsRes = await http().get("/transaction/list");
         // Handle different response structures
-        const transactionsData = transactionsRes.data?.data || transactionsRes.data || [];
+        const transactionsData = transactionsRes.data?.Data || transactionsRes.data?.data || transactionsRes.data || [];
         setTransactions(Array.isArray(transactionsData) ? transactionsData : []);
 
         // Fetch graph data
@@ -733,14 +743,14 @@ export default function DashboardV2() {
         aria-label={balanceVisible ? "Hide wallet balance" : "Show wallet balance"}
         className="flex items-center gap-2 text-[12.5px] text-white/85"
       >
-        Wallet balance
+        Wallet balanc
         {balanceVisible ? <FiEye size={12} /> : <FiEyeOff size={12} />}
       </button>
 
       <p className="my-6 text-[44px] sm:[30px] font-extrabold leading-none tracking-tight lg:text-[34px]">
         {balanceVisible ? (
           <>
-            ₦{parseFloat(balance?.currentBalance || 0).toLocaleString()}
+            ₦{parseFloat(balance?.balance || balance?.currentBalance || 0).toLocaleString()}
             <span className="text-[18px] font-bold text-white/60 lg:text-[20px]">.00</span>
           </>
         ) : (
@@ -963,12 +973,9 @@ export default function DashboardV2() {
                           key={title}
                           className="flex items-center gap-3 rounded-xl py-2.5 transition-colors hover:bg-[#faf8f6]"
                         >
-                          <span
-                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                            style={{ color: fg, backgroundColor: bg }}
-                          >
-                            <Icon size={15} />
-                          </span>
+                         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#f1e4d8] bg-[#fff6ef] text-[#f26a10]">
+  <Icon size={16} />
+</span>
                           <span className="min-w-0 flex-1">
                             <span className="block text-[13px] font-semibold">{title}</span>
                             <span className="mt-0.5 block truncate text-[11px] text-[#8a817b]">{detail}</span>

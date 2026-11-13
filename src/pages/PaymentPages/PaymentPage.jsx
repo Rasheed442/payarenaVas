@@ -150,11 +150,20 @@ const PaymentPage = () => {
 
   const handleAmount = (amount, item) => {
     console.log(amount);
-    if (item.MinAmount != null && amount < item.MinAmount) {
-      setAmountError(`Amount must be greater than ${item.MinAmount}`);
+    const numericAmount = parseFloat(amount);
+
+    // Check if amount is a valid number
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      setAmountError("Please enter a valid amount greater than 0");
       setButtonDisabled(true);
-    } else if (item.MaxAmount != null && amount > item.MaxAmount) {
-      setAmountError(`Amount must be less than ${item.MaxAmount}`);
+      return;
+    }
+
+    if (item.MinAmount != null && numericAmount < item.MinAmount) {
+      setAmountError(`Amount must be at least ${item.MinAmount}`);
+      setButtonDisabled(true);
+    } else if (item.MaxAmount != null && numericAmount > item.MaxAmount) {
+      setAmountError(`Amount must not exceed ${item.MaxAmount}`);
       setButtonDisabled(true);
     } else {
       setAmountError("");
@@ -282,14 +291,17 @@ const PaymentPage = () => {
                                 handleAmount(e.target.value, selectedProduct)
                               }
                               label="Amount"
-                              type="text"
+                              type="number"
                               name="Amount"
                               placeHolder="Enter Amount"
                               disabled={disableField}
+                              min="0"
+                              step="0.01"
                               validate={(value) => {
                                 let errorMessage;
-                                if (!/^\d+(\.\d{1,2})?$/i.test(value)) {
-                                  errorMessage = "Invalid amount";
+                                const numericValue = parseFloat(value);
+                                if (!value || isNaN(numericValue) || numericValue <= 0) {
+                                  errorMessage = "Please enter a valid amount greater than 0";
                                 }
                                 return errorMessage;
                               }}
@@ -310,15 +322,15 @@ const PaymentPage = () => {
                               selectedProduct?.ParameterLabel ||
                               "VendorParameterValue"
                             }
-                            type="text"
+                            type="tel"
                             name="VendorParameterValue"
                             placeHolder=""
                             validate={(value) => {
-                              if (
-                                isAirtimePayment &&
-                                !value?.trim()
-                              ) {
+                              if (isAirtimePayment && !value?.trim()) {
                                 return "Phone Number is required!";
+                              }
+                              if (isAirtimePayment && value && !/^\d+$/.test(value)) {
+                                return "Phone Number must contain only digits!";
                               }
                             }}
                           />

@@ -46,8 +46,8 @@ const chip = "bg-white shadow-[0_1px_2px_rgba(26,18,16,0.04)]";
 export default function ProfilePage() {
   const navigate = useNavigate();
   const user = useMemo(() => getUserDetails(), []);
-  const firstName = user.FirstName?.trim() || "David";
-  const lastName = user.LastName?.trim() || "Adeleke";
+  const firstName = user.FirstName?.trim() || "";
+  const lastName = user.LastName?.trim() || "";
   const fullName = `${firstName} ${lastName}`;
   const email = user.Email || "user@example.com";
   const phone = user.PhoneNumber || "+234 800 000 0000";
@@ -388,7 +388,7 @@ export default function ProfilePage() {
             <div className="grid gap-4 md:grid-cols-2">
               {/* First Name */}
               <div>
-                <label className="block text-[11px] font-semibold text-[#8a817b] uppercase tracking-wider mb-2">
+                <label className="block text-[11px] font-light text-[#8a817b] uppercase tracking-wider mb-2">
                   First Name
                 </label>
                 {editMode ? (
@@ -408,7 +408,7 @@ export default function ProfilePage() {
 
               {/* Last Name */}
               <div>
-                <label className="block text-[11px] font-semibold text-[#8a817b] uppercase tracking-wider mb-2">
+                <label className="block text-[11px] font-light text-[#8a817b] uppercase tracking-wider mb-2">
                   Last Name
                 </label>
                 {editMode ? (
@@ -428,7 +428,7 @@ export default function ProfilePage() {
 
               {/* Email */}
               <div>
-                <label className="block text-[11px] font-semibold text-[#8a817b] uppercase tracking-wider mb-2">
+                <label className="block text-[11px] font-light text-[#8a817b] uppercase tracking-wider mb-2">
                   Email Address
                 </label>
                 {editMode ? (
@@ -448,7 +448,7 @@ export default function ProfilePage() {
 
               {/* Phone */}
               <div>
-                <label className="block text-[11px] font-semibold text-[#8a817b] uppercase tracking-wider mb-2">
+                <label className="block text-[11px] font-light text-[#8a817b] uppercase tracking-wider mb-2">
                   Phone Number
                 </label>
                 {editMode ? (

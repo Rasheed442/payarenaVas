@@ -90,8 +90,8 @@ function Panel({ title, desc, children }) {
 export default function SettingsV2Page() {
   const navigate = useNavigate();
   const user = useMemo(() => getUserDetails(), []);
-  const firstName = user.FirstName?.trim() || "David";
-  const lastName = user.LastName?.trim() || "Adeleke";
+  const firstName = user.FirstName?.trim() || "";
+  const lastName = user.LastName?.trim() || "";
   const fullName = `${firstName} ${lastName}`;
   const profilePhoto = user.ProfilePhoto || defaultProfile;
 

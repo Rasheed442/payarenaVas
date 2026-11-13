@@ -68,6 +68,8 @@ export default function RegisterPassword() {
 
       localStorage.setItem("token", completion.identity_token);
       localStorage.setItem("mall-token", completion.identity_token); // Also store as mall-token for SSO
+      // Registration already enforced KYC verification via biodata-verify
+      localStorage.setItem("kycVerified", "true");
       if (completion.refresh_token) localStorage.setItem("refreshToken", completion.refresh_token);
       toast.success(completion.message || "Your Payarena account has been created.");
       navigate("/register/verified", {
